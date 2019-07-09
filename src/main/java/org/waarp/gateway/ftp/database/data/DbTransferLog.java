@@ -1,31 +1,20 @@
 /**
  * This file is part of Waarp Project.
- *
- * Copyright 2009, Frederic Bregier, and individual contributors by the @author tags. See the
- * COPYRIGHT.txt in the distribution for a full listing of individual contributors.
- *
- * All Waarp Project is free software: you can redistribute it and/or modify it under the terms of
- * the GNU General Public License as published by the Free Software Foundation, either version 3 of
- * the License, or (at your option) any later version.
- *
- * Waarp is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even
- * the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General
- * Public License for more details.
- *
+ * <p>
+ * Copyright 2009, Frederic Bregier, and individual contributors by the @author tags. See the COPYRIGHT.txt in the
+ * distribution for a full listing of individual contributors.
+ * <p>
+ * All Waarp Project is free software: you can redistribute it and/or modify it under the terms of the GNU General
+ * Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
+ * later version.
+ * <p>
+ * Waarp is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+ * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * <p>
  * You should have received a copy of the GNU General Public License along with Waarp . If not, see
  * <http://www.gnu.org/licenses/>.
  */
 package org.waarp.gateway.ftp.database.data;
-
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InvalidObjectException;
-import java.io.Writer;
-import java.sql.SQLException;
-import java.sql.Timestamp;
-import java.sql.Types;
-import java.util.HashSet;
-import java.util.Set;
 
 import org.dom4j.Document;
 import org.waarp.common.command.ReplyCode;
@@ -48,6 +37,16 @@ import org.waarp.ftp.core.command.FtpCommandCode;
 import org.waarp.gateway.ftp.config.FileBasedConfiguration;
 import org.waarp.gateway.ftp.database.DbConstant;
 
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InvalidObjectException;
+import java.io.Writer;
+import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.sql.Types;
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * Transfer Log for FtpExec
  *
@@ -56,103 +55,108 @@ import org.waarp.gateway.ftp.database.DbConstant;
  *
  */
 public class DbTransferLog extends AbstractDbData {
-    /**
-     * Internal Logger
-     */
-    private static final WaarpLogger logger = WaarpLoggerFactory
-            .getLogger(DbTransferLog.class);
-
-    public static enum Columns {
-        FILENAME,
-        MODETRANS,
-        STARTTRANS,
-        STOPTRANS,
-        TRANSINFO,
-        INFOSTATUS,
-        UPDATEDINFO,
-        USERID,
-        ACCOUNTID,
-        HOSTID,
-        SPECIALID;
-    }
-
     public static final int[] dbTypes = {
             Types.VARCHAR,
             Types.VARCHAR,
             Types.TIMESTAMP, Types.TIMESTAMP,
             Types.LONGVARCHAR, Types.INTEGER, Types.INTEGER,
-            Types.NVARCHAR, Types.NVARCHAR, Types.NVARCHAR, Types.BIGINT };
-
+            Types.NVARCHAR, Types.NVARCHAR, Types.NVARCHAR, Types.BIGINT
+    };
     public static final String table = " TRANSFLOG ";
-
     public static final String fieldseq = "TRANSSEQ";
-
     public static final Columns[] indexes = {
             Columns.STARTTRANS, Columns.UPDATEDINFO, Columns.INFOSTATUS
     };
-
     public static final String XMLRUNNERS = "transferlogs";
     public static final String XMLRUNNER = "log";
-
+    /**
+     * Special For DbTransferLog
+     */
+    public static final int NBPRKEY = 4;
+    protected static final String selectAllFields = Columns.FILENAME.name() + "," +
+                                                    Columns.MODETRANS.name() + "," +
+                                                    Columns.STARTTRANS.name() + "," + Columns.STOPTRANS.name() + "," +
+                                                    Columns.TRANSINFO.name() + "," +
+                                                    Columns.INFOSTATUS.name() + "," + Columns.UPDATEDINFO.name() + "," +
+                                                    Columns.USERID.name() + "," + Columns.ACCOUNTID.name() + "," +
+                                                    Columns.HOSTID.name() + "," + Columns.SPECIALID.name();
+    protected static final String updateAllFields =
+            Columns.FILENAME.name() + "=?," +
+            Columns.MODETRANS.name() + "=?," +
+            Columns.STARTTRANS.name() + "=?," + Columns.STOPTRANS.name() + "=?," +
+            Columns.TRANSINFO.name() + "=?," +
+            Columns.INFOSTATUS.name() + "=?," + Columns.UPDATEDINFO.name() + "=?";
+    protected static final String insertAllValues = " (?,?,?,?,?,?,?,?,?,?,?) ";
+    /**
+     * Internal Logger
+     */
+    private static final WaarpLogger logger = WaarpLoggerFactory
+            .getLogger(DbTransferLog.class);
+    private static final Set<Long> clientNoDbSpecialId = new HashSet<Long>();
+    /*
+     * XXXIDXXX XXXUSERXXX XXXACCTXXX XXXFILEXXX XXXMODEXXX XXXSTATUSXXX XXXINFOXXX XXXUPINFXXX
+     * XXXSTARTXXX XXXSTOPXXX
+     */
+    private static final String XML_IDX = "IDX";
+    private static final String XML_USER = "USER";
+    private static final String XML_ACCT = "ACCT";
+    private static final String XML_FILE = "FILE";
+    private static final String XML_MODE = "MODE";
+    private static final String XML_STATUS = "STATUS";
+    private static final String XML_INFO = "INFO";
+    private static final String XML_UPDINFO = "UPDINFO";
+    private static final String XML_START = "START";
+    // ALL TABLE SHOULD IMPLEMENT THIS
+    private static final String XML_STOP = "STOP";
+    private static final String XML_ROOT = "LOGS";
+    private static final String XML_ENTRY = "LOG";
+    /**
+     * Structure of the Configuration file
+     *
+     */
+    private static final XmlDecl[] logDecls = {
+            // identity
+            new XmlDecl(XmlType.STRING, XML_IDX),
+            new XmlDecl(XmlType.STRING, XML_USER),
+            new XmlDecl(XmlType.STRING, XML_ACCT),
+            new XmlDecl(XmlType.STRING, XML_FILE),
+            new XmlDecl(XmlType.STRING, XML_MODE),
+            new XmlDecl(XmlType.STRING, XML_STATUS),
+            new XmlDecl(XmlType.STRING, XML_INFO),
+            new XmlDecl(XmlType.STRING, XML_UPDINFO),
+            new XmlDecl(XmlType.STRING, XML_START),
+            new XmlDecl(XmlType.STRING, XML_STOP),
+    };
+    /**
+     * Global Structure for Server Configuration
+     */
+    private static final XmlDecl[] logsElements = {
+            new XmlDecl(XML_ENTRY, XmlType.XVAL, XML_ROOT + "/" + XML_ENTRY,
+                        logDecls, true)
+    };
     // Values
     private String user;
-
     private String account;
-
     private long specialId;
-
     private boolean isSender;
-
     private String filename;
-
     private String mode;
-
     private Timestamp start;
-
     private Timestamp stop;
-
     private String infotransf;
-
     private String hostid;
-
     /**
      * Info status error code
      */
     private ReplyCode infostatus = ReplyCode.REPLY_000_SPECIAL_NOSTATUS;
-
     /**
      * The global status for running
      */
     private int updatedInfo = UpdatedInfo.UNKNOWN.ordinal();
 
     /**
-     * Special For DbTransferLog
-     */
-    public static final int NBPRKEY = 4;
-    // ALL TABLE SHOULD IMPLEMENT THIS
-
-    protected static final String selectAllFields = Columns.FILENAME.name() + "," +
-            Columns.MODETRANS.name() + "," +
-            Columns.STARTTRANS.name() + "," + Columns.STOPTRANS.name() + "," +
-            Columns.TRANSINFO.name() + "," +
-            Columns.INFOSTATUS.name() + "," + Columns.UPDATEDINFO.name() + "," +
-            Columns.USERID.name() + "," + Columns.ACCOUNTID.name() + "," +
-            Columns.HOSTID.name() + "," + Columns.SPECIALID.name();
-
-    protected static final String updateAllFields =
-            Columns.FILENAME.name() + "=?," +
-                    Columns.MODETRANS.name() + "=?," +
-                    Columns.STARTTRANS.name() + "=?," + Columns.STOPTRANS.name() + "=?," +
-                    Columns.TRANSINFO.name() + "=?," +
-                    Columns.INFOSTATUS.name() + "=?," + Columns.UPDATEDINFO.name() + "=?";
-
-    protected static final String insertAllValues = " (?,?,?,?,?,?,?,?,?,?,?) ";
-
-    private static final Set<Long> clientNoDbSpecialId = new HashSet<Long>();
-
-    /**
      * Insert into database
-     * 
+     *
      * @param dbSession
      * @param user
      * @param account
@@ -166,10 +170,10 @@ public class DbTransferLog extends AbstractDbData {
      * @throws WaarpDatabaseException
      */
     public DbTransferLog(DbSession dbSession, String user, String account,
-            long specialId,
-            boolean isSender, String filename, String mode,
-            ReplyCode infostatus, String info,
-            UpdatedInfo updatedInfo) throws WaarpDatabaseException {
+                         long specialId,
+                         boolean isSender, String filename, String mode,
+                         ReplyCode infostatus, String info,
+                         UpdatedInfo updatedInfo) throws WaarpDatabaseException {
         super(dbSession);
         this.user = user;
         this.account = account;
@@ -189,7 +193,7 @@ public class DbTransferLog extends AbstractDbData {
 
     /**
      * Load from database
-     * 
+     *
      * @param dbSession
      * @param user
      * @param account
@@ -206,13 +210,462 @@ public class DbTransferLog extends AbstractDbData {
         select();
     }
 
+    /**
+     * Private constructor
+     *
+     * @param session
+     */
+    private DbTransferLog(DbSession dBsession) {
+        super(dBsession);
+    }
+
+    /**
+     *
+     * @return the condition to limit access to the row concerned by the Host
+     */
+    private static String getLimitWhereCondition() {
+        return " " + Columns.HOSTID + " = '" +
+               FileBasedConfiguration.fileBasedConfiguration.HOST_ID + "' ";
+    }
+
+    /**
+     * For instance when getting updated information
+     *
+     * @param preparedStatement
+     * @return the next updated DbTaskRunner
+     * @throws WaarpDatabaseNoConnectionException
+     * @throws WaarpDatabaseSqlException
+     */
+    public static DbTransferLog getFromStatement(
+            DbPreparedStatement preparedStatement)
+            throws WaarpDatabaseNoConnectionException, WaarpDatabaseSqlException {
+        DbTransferLog dbTaskRunner = new DbTransferLog(preparedStatement
+                                                               .getDbSession());
+        dbTaskRunner.getValues(preparedStatement, dbTaskRunner.allFields);
+        dbTaskRunner.setFromArray();
+        dbTaskRunner.isSaved = true;
+        return dbTaskRunner;
+    }
+
+    /**
+     * @param session
+     * @param status
+     * @param limit
+     *            limit the number of rows
+     * @return the DbPreparedStatement for getting TransferLog according to status ordered by start
+     * @throws WaarpDatabaseNoConnectionException
+     * @throws WaarpDatabaseSqlException
+     */
+    public static DbPreparedStatement getStatusPrepareStament(
+            DbSession session, ReplyCode status, int limit)
+            throws WaarpDatabaseNoConnectionException, WaarpDatabaseSqlException {
+        String request = "SELECT " + selectAllFields + " FROM " + table;
+        if (status != null) {
+            request += " WHERE " + Columns.INFOSTATUS.name() + " = " +
+                       status.getCode() + " AND " + getLimitWhereCondition();
+        } else {
+            request += " WHERE " + getLimitWhereCondition();
+        }
+        request += " ORDER BY " + Columns.STARTTRANS.name() + " DESC ";
+        if (limit > 0) {
+            request = session.getAdmin().getDbModel().limitRequest(selectAllFields, request, limit);
+        }
+        return new DbPreparedStatement(session, request);
+    }
+
+    /**
+     *
+     * @param session
+     * @param start
+     * @param stop
+     * @return the DbPreparedStatement for getting Selected Object, whatever their status
+     * @throws WaarpDatabaseNoConnectionException
+     * @throws WaarpDatabaseSqlException
+     */
+    public static DbPreparedStatement getLogPrepareStament(DbSession session,
+                                                           Timestamp start, Timestamp stop)
+            throws WaarpDatabaseNoConnectionException, WaarpDatabaseSqlException {
+        return getLogPrepareStament(session, start, stop, null);
+    }
+
+    /**
+     *
+     * @param session
+     * @param start
+     * @param stop
+     * @return the DbPreparedStatement for getting Selected Object, whatever their status
+     * @throws WaarpDatabaseNoConnectionException
+     * @throws WaarpDatabaseSqlException
+     */
+    public static DbPreparedStatement getLogPrepareStament(DbSession session,
+                                                           Timestamp start, Timestamp stop, ReplyCode status)
+            throws WaarpDatabaseNoConnectionException, WaarpDatabaseSqlException {
+
+        String statusWhereFilter = "";
+        if (status != null) {
+            statusWhereFilter = Columns.INFOSTATUS.name() + " = " +
+                                status.getCode() + " AND ";
+        }
+
+        DbPreparedStatement preparedStatement = new DbPreparedStatement(session);
+        String request = "SELECT " + selectAllFields + " FROM " + table;
+        if (start != null && stop != null) {
+            request += " WHERE " + statusWhereFilter +
+                       Columns.STARTTRANS.name() + " >= ? AND " +
+                       Columns.STARTTRANS.name() + " <= ? AND " + getLimitWhereCondition() +
+                       " ORDER BY " + Columns.SPECIALID.name() + " DESC ";
+            preparedStatement.createPrepareStatement(request);
+            try {
+                preparedStatement.getPreparedStatement().setTimestamp(1, start);
+                preparedStatement.getPreparedStatement().setTimestamp(2, stop);
+            } catch (SQLException e) {
+                preparedStatement.realClose();
+                throw new WaarpDatabaseSqlException(e);
+            }
+        } else if (start != null) {
+            request += " WHERE " + statusWhereFilter +
+                       Columns.STARTTRANS.name() + " >= ? AND " + getLimitWhereCondition() +
+                       " ORDER BY " + Columns.SPECIALID.name() + " DESC ";
+            preparedStatement.createPrepareStatement(request);
+            try {
+                preparedStatement.getPreparedStatement().setTimestamp(1, start);
+            } catch (SQLException e) {
+                preparedStatement.realClose();
+                throw new WaarpDatabaseSqlException(e);
+            }
+        } else if (stop != null) {
+            request += " WHERE " + statusWhereFilter +
+                       Columns.STARTTRANS.name() + " <= ? AND " + getLimitWhereCondition() +
+                       " ORDER BY " + Columns.SPECIALID.name() + " DESC ";
+            preparedStatement.createPrepareStatement(request);
+            try {
+                preparedStatement.getPreparedStatement().setTimestamp(1, stop);
+            } catch (SQLException e) {
+                preparedStatement.realClose();
+                throw new WaarpDatabaseSqlException(e);
+            }
+        } else {
+            request += " WHERE " + statusWhereFilter + getLimitWhereCondition() +
+                       " ORDER BY " + Columns.SPECIALID.name() + " DESC ";
+            preparedStatement.createPrepareStatement(request);
+        }
+        return preparedStatement;
+    }
+
+    /**
+     *
+     * @param session
+     * @return the DbPreparedStatement for getting Updated Object
+     * @throws WaarpDatabaseNoConnectionException
+     * @throws WaarpDatabaseSqlException
+     */
+    public static DbPreparedStatement getCountInfoPrepareStatement(DbSession session)
+            throws WaarpDatabaseNoConnectionException, WaarpDatabaseSqlException {
+        String request = "SELECT COUNT(" + Columns.SPECIALID.name() +
+                         ") FROM " + table + " WHERE " +
+                         Columns.STARTTRANS.name() + " >= ? AND " + getLimitWhereCondition() +
+                         " AND " + Columns.UPDATEDINFO.name() + " = ? ";
+        DbPreparedStatement pstt = new DbPreparedStatement(session, request);
+        session.addLongTermPreparedStatement(pstt);
+        return pstt;
+    }
+
+    /**
+     *
+     * @param pstt
+     * @param info
+     * @param time
+     * @return the number of elements (COUNT) from the statement
+     */
+    public static long getResultCountPrepareStatement(DbPreparedStatement pstt, UpdatedInfo info,
+                                                      long time) {
+        long result = 0;
+        try {
+            finishSelectOrCountPrepareStatement(pstt, time);
+            pstt.getPreparedStatement().setInt(2, info.ordinal());
+            pstt.executeQuery();
+            if (pstt.getNext()) {
+                result = pstt.getResultSet().getLong(1);
+            }
+        } catch (WaarpDatabaseNoConnectionException e) {
+        } catch (WaarpDatabaseSqlException e) {
+        } catch (SQLException e) {
+        } finally {
+            pstt.close();
+        }
+        return result;
+    }
+
+    /**
+     * @param session
+     * @return the DbPreparedStatement for getting Runner according to status ordered by start
+     * @throws WaarpDatabaseNoConnectionException
+     * @throws WaarpDatabaseSqlException
+     */
+    public static DbPreparedStatement getCountStatusPrepareStatement(
+            DbSession session)
+            throws WaarpDatabaseNoConnectionException, WaarpDatabaseSqlException {
+        String request = "SELECT COUNT(" + Columns.SPECIALID.name() + ") FROM " + table;
+        request += " WHERE " + Columns.STARTTRANS.name() + " >= ? ";
+        request += " AND " + Columns.INFOSTATUS.name() + " = ? AND " + getLimitWhereCondition();
+        DbPreparedStatement prep = new DbPreparedStatement(session, request);
+        session.addLongTermPreparedStatement(prep);
+        return prep;
+    }
+
+    /**
+     * @param session
+     * @return the DbPreparedStatement for getting All according to status ordered by start
+     * @throws WaarpDatabaseNoConnectionException
+     * @throws WaarpDatabaseSqlException
+     */
+    public static DbPreparedStatement getCountAllPrepareStatement(
+            DbSession session)
+            throws WaarpDatabaseNoConnectionException, WaarpDatabaseSqlException {
+        String request = "SELECT COUNT(" + Columns.SPECIALID.name() + ") FROM " + table;
+        request += " WHERE " + Columns.STARTTRANS.name() + " >= ? ";
+        request += " AND " + getLimitWhereCondition();
+        DbPreparedStatement prep = new DbPreparedStatement(session, request);
+        session.addLongTermPreparedStatement(prep);
+        return prep;
+    }
+
+    /**
+     *
+     * @param pstt
+     * @param error
+     * @param time
+     * @return the number of elements (COUNT) from the statement
+     */
+    public static long getResultCountPrepareStatement(DbPreparedStatement pstt, ReplyCode error,
+                                                      long time) {
+        long result = 0;
+        try {
+            finishSelectOrCountPrepareStatement(pstt, time);
+            pstt.getPreparedStatement().setInt(2, error.getCode());
+            pstt.executeQuery();
+            if (pstt.getNext()) {
+                result = pstt.getResultSet().getLong(1);
+            }
+        } catch (WaarpDatabaseNoConnectionException e) {
+        } catch (WaarpDatabaseSqlException e) {
+        } catch (SQLException e) {
+        } finally {
+            pstt.close();
+        }
+        return result;
+    }
+
+    /**
+     *
+     * @param pstt
+     * @return the number of elements (COUNT) from the statement
+     */
+    public static long getResultCountPrepareStatement(DbPreparedStatement pstt) {
+        long result = 0;
+        try {
+            pstt.executeQuery();
+            if (pstt.getNext()) {
+                result = pstt.getResultSet().getLong(1);
+            }
+        } catch (WaarpDatabaseNoConnectionException e) {
+        } catch (WaarpDatabaseSqlException e) {
+        } catch (SQLException e) {
+        } finally {
+            pstt.close();
+        }
+        return result;
+    }
+
+    /**
+     * Set the current time in the given updatedPreparedStatement
+     *
+     * @param pstt
+     * @throws WaarpDatabaseNoConnectionException
+     * @throws WaarpDatabaseSqlException
+     */
+    public static void finishSelectOrCountPrepareStatement(DbPreparedStatement pstt)
+            throws WaarpDatabaseNoConnectionException, WaarpDatabaseSqlException {
+        finishSelectOrCountPrepareStatement(pstt, System.currentTimeMillis());
+    }
+
+    /**
+     * Set the current time in the given updatedPreparedStatement
+     *
+     * @param pstt
+     * @throws WaarpDatabaseNoConnectionException
+     * @throws WaarpDatabaseSqlException
+     */
+    public static void finishSelectOrCountPrepareStatement(DbPreparedStatement pstt, long time)
+            throws WaarpDatabaseNoConnectionException, WaarpDatabaseSqlException {
+        Timestamp startlimit = new Timestamp(time);
+        try {
+            pstt.getPreparedStatement().setTimestamp(1, startlimit);
+        } catch (SQLException e) {
+            logger.error("Database SQL Error: Cannot set timestamp", e);
+            throw new WaarpDatabaseSqlException("Cannot set timestamp", e);
+        }
+    }
+
+    /**
+     * Running or not transfers are concerned
+     *
+     * @param session
+     * @param in
+     *            True for Incoming, False for Outgoing
+     * @return the DbPreparedStatement for getting Runner according to in or out going way and Error
+     * @throws WaarpDatabaseNoConnectionException
+     * @throws WaarpDatabaseSqlException
+     */
+    public static DbPreparedStatement getCountInOutErrorPrepareStatement(
+            DbSession session, boolean in)
+            throws WaarpDatabaseNoConnectionException, WaarpDatabaseSqlException {
+        String request = "SELECT COUNT(" + Columns.SPECIALID.name() + ") FROM " + table;
+        String inCond = null;
+        if (in) {
+            inCond = " (" + Columns.MODETRANS.name() + " = '" + FtpCommandCode.APPE.name()
+                     + "' OR " +
+                     Columns.MODETRANS.name() + " = '" + FtpCommandCode.STOR.name() + "' OR " +
+                     Columns.MODETRANS.name() + " = '" + FtpCommandCode.STOU.name() + "') ";
+        } else {
+            inCond = " (" + Columns.MODETRANS.name() + " = '" + FtpCommandCode.RETR.name() + "') ";
+        }
+        request += " WHERE " + inCond;
+        request += " AND " + getLimitWhereCondition() + " ";
+        request += " AND " + Columns.STARTTRANS.name() + " >= ? ";
+        request += " AND " + Columns.UPDATEDINFO.name() + " = " + UpdatedInfo.INERROR.ordinal();
+        DbPreparedStatement prep = new DbPreparedStatement(session, request);
+        session.addLongTermPreparedStatement(prep);
+        return prep;
+    }
+
+    /**
+     * Running or not transfers are concerned
+     *
+     * @param session
+     * @param in
+     *            True for Incoming, False for Outgoing
+     * @param running
+     *            True for Running only, False for all
+     * @return the DbPreparedStatement for getting Runner according to in or out going way
+     * @throws WaarpDatabaseNoConnectionException
+     * @throws WaarpDatabaseSqlException
+     */
+    public static DbPreparedStatement getCountInOutRunningPrepareStatement(
+            DbSession session, boolean in, boolean running)
+            throws WaarpDatabaseNoConnectionException, WaarpDatabaseSqlException {
+        String request = "SELECT COUNT(" + Columns.SPECIALID.name() + ") FROM " + table;
+        String inCond = null;
+        if (in) {
+            inCond = " (" + Columns.MODETRANS.name() + " = '" + FtpCommandCode.APPE.name()
+                     + "' OR " +
+                     Columns.MODETRANS.name() + " = '" + FtpCommandCode.STOR.name() + "' OR " +
+                     Columns.MODETRANS.name() + " = '" + FtpCommandCode.STOU.name() + "') ";
+        } else {
+            inCond = " (" + Columns.MODETRANS.name() + " = '" + FtpCommandCode.RETR.name() + "') ";
+        }
+        request += " WHERE " + inCond;
+        request += " AND " + getLimitWhereCondition() + " ";
+        request += " AND " + Columns.STARTTRANS.name() + " >= ? ";
+        if (running) {
+            request += " AND " + Columns.UPDATEDINFO.name() + " = " + UpdatedInfo.RUNNING.ordinal();
+        }
+        DbPreparedStatement prep = new DbPreparedStatement(session, request);
+        session.addLongTermPreparedStatement(prep);
+        return prep;
+    }
+
+    /**
+     * Exports DbTransferLogs to a file and purges the corresponding DbTransferLogs
+     *
+     * @param preparedStatement
+     *            the DbTransferLog as SELECT command to export (and purge)
+     * @param filename
+     *            the filename where the DbLogs will be exported
+     * @return The message for the HTTPS interface
+     */
+    public static String saveDbTransferLogFile(DbPreparedStatement preparedStatement,
+                                               String filename) {
+        Writer outWriter = null;
+        try {
+            outWriter = new FileWriter(filename);
+        } catch (IOException e) {
+            return "Cannot open file " + filename + ": " + e.getMessage();
+        }
+
+        return saveDbTransferLogFile(preparedStatement, outWriter, true);
+    }
+
+    /**
+     * Exports DbTransferLogs to a Writer object and  optionally purges
+     * the corresponding DbTransferLogs
+     *
+     * @param preparedStatement
+     *            the DbTransferLog as SELECT command to export (and purge)
+     * @param outWriter
+     *            a Writer object where the DbLogs will be written
+     * @param  purge
+     *            sets whether or not the selected results must be purged
+     * @return The message for the HTTPS interface
+     */
+    public static String saveDbTransferLogFile(DbPreparedStatement preparedStatement,
+                                               Writer outWriter, boolean purge) {
+        Document document = XmlUtil.createEmptyDocument();
+        XmlValue[] roots = new XmlValue[1];
+        XmlValue root = new XmlValue(logsElements[0]);
+        roots[0] = root;
+        String message = null;
+        try {
+            try {
+                preparedStatement.executeQuery();
+                while (preparedStatement.getNext()) {
+                    DbTransferLog log = DbTransferLog.getFromStatement(preparedStatement);
+                    XmlValue[] values = log.saveIntoXmlValue();
+                    if (values == null) {
+                        return "Error during export";
+                    }
+                    try {
+                        root.addValue(values);
+                    } catch (InvalidObjectException e) {
+                        logger.error("Error during Write DbTransferLog file", e);
+                        return "Error during purge";
+                    }
+
+                    if (purge) {
+                        log.delete();
+                    }
+                }
+            } catch (WaarpDatabaseNoConnectionException e) {
+                message = "Error during export or purge";
+            } catch (WaarpDatabaseSqlException e) {
+                message = "Error during export or purge";
+            } catch (WaarpDatabaseException e) {
+                message = "Error during export or purge";
+            }
+        } finally {
+            preparedStatement.realClose();
+        }
+
+        XmlUtil.write(document, roots);
+        try {
+            XmlUtil.saveDocument(outWriter, document);
+            message = "Logs exported " + (purge? "and purged" : "")
+                      + " successfully";
+        } catch (IOException e1) {
+            logger.error("Cannot write to file since {}", e1.getMessage());
+            return message + " but cannot save file as export";
+        }
+        return message;
+    }
+
     @Override
     protected void initObject() {
         primaryKey = new DbValue[] {
                 new DbValue(user, Columns.USERID.name()),
                 new DbValue(account, Columns.ACCOUNTID.name()),
                 new DbValue(hostid, Columns.HOSTID.name()),
-                new DbValue(specialId, Columns.SPECIALID.name()) };
+                new DbValue(specialId, Columns.SPECIALID.name())
+        };
         otherFields = new DbValue[] {
                 // FILENAME, MODETRANS,
                 // STARTTRANS, STOPTRANS, TRANSINFO
@@ -223,12 +676,14 @@ public class DbTransferLog extends AbstractDbData {
                 new DbValue(stop, Columns.STOPTRANS.name()),
                 new DbValue(infotransf, Columns.TRANSINFO.name()),
                 new DbValue(ReplyCode.REPLY_000_SPECIAL_NOSTATUS.getCode(),
-                        Columns.INFOSTATUS.name()), // infostatus.getCode()
-                new DbValue(updatedInfo, Columns.UPDATEDINFO.name()) };
+                            Columns.INFOSTATUS.name()), // infostatus.getCode()
+                new DbValue(updatedInfo, Columns.UPDATEDINFO.name())
+        };
         allFields = new DbValue[] {
                 otherFields[0], otherFields[1], otherFields[2], otherFields[3],
                 otherFields[4], otherFields[5], otherFields[6],
-                primaryKey[0], primaryKey[1], primaryKey[2], primaryKey[3] };
+                primaryKey[0], primaryKey[1], primaryKey[2], primaryKey[3]
+        };
     }
 
     @Override
@@ -297,14 +752,14 @@ public class DbTransferLog extends AbstractDbData {
     }
 
     /**
-     * 
+     *
      * @return The Where condition on Primary Key
      */
     protected String getWherePrimaryKey() {
         return primaryKey[0].getColumn() + " = ? AND " +
-                primaryKey[1].getColumn() + " = ? AND " +
-                primaryKey[2].getColumn() + " = ? AND " +
-                primaryKey[3].getColumn() + " = ? ";
+               primaryKey[1].getColumn() + " = ? AND " +
+               primaryKey[2].getColumn() + " = ? AND " +
+               primaryKey[3].getColumn() + " = ? ";
     }
 
     /**
@@ -315,15 +770,6 @@ public class DbTransferLog extends AbstractDbData {
         primaryKey[1].setValue(account);
         primaryKey[2].setValue(hostid);
         primaryKey[3].setValue(specialId);
-    }
-
-    /**
-     * 
-     * @return the condition to limit access to the row concerned by the Host
-     */
-    private static String getLimitWhereCondition() {
-        return " " + Columns.HOSTID + " = '" +
-                FileBasedConfiguration.fileBasedConfiguration.HOST_ID + "' ";
     }
 
     /**
@@ -373,12 +819,12 @@ public class DbTransferLog extends AbstractDbData {
             isSaved = true;
             return;
         }
-        logger.debug("Dbrelated info: "+dbSession.getAdmin().getServer());
+        logger.debug("Dbrelated info: " + dbSession.getAdmin().getServer());
         // First need to find a new id if id is not ok
         if (specialId == DbConstant.ILLEGALVALUE) {
             specialId = dbSession.getAdmin().getDbModel().nextSequence(dbSession);
             logger.debug("Try Insert create a new Id from sequence: " +
-                    specialId);
+                         specialId);
             setPrimaryKey();
         }
         super.insert();
@@ -387,7 +833,7 @@ public class DbTransferLog extends AbstractDbData {
 
     /**
      * As insert but with the ability to change the SpecialId
-     * 
+     *
      * @throws WaarpDatabaseException
      */
     public void create() throws WaarpDatabaseException {
@@ -406,7 +852,7 @@ public class DbTransferLog extends AbstractDbData {
         if (specialId == DbConstant.ILLEGALVALUE) {
             specialId = dbSession.getAdmin().getDbModel().nextSequence(dbSession);
             logger.debug("Try Insert create a new Id from sequence: " +
-                    specialId);
+                         specialId);
             setPrimaryKey();
         }
         setToArray();
@@ -414,7 +860,7 @@ public class DbTransferLog extends AbstractDbData {
                 dbSession);
         try {
             preparedStatement.createPrepareStatement("INSERT INTO " + table +
-                    " (" + selectAllFields + ") VALUES " + insertAllValues);
+                                                     " (" + selectAllFields + ") VALUES " + insertAllValues);
             setValues(preparedStatement, allFields);
             try {
                 int count = preparedStatement.executeUpdate();
@@ -426,11 +872,11 @@ public class DbTransferLog extends AbstractDbData {
                 DbPreparedStatement find = new DbPreparedStatement(dbSession);
                 try {
                     find.createPrepareStatement("SELECT MAX(" +
-                            primaryKey[3].getColumn() + ") FROM " + table + " WHERE " +
-                            primaryKey[0].getColumn() + " = ? AND " +
-                            primaryKey[1].getColumn() + " = ? AND " +
-                            primaryKey[2].getColumn() + " = ? AND " +
-                            primaryKey[3].getColumn() + " != ? ");
+                                                primaryKey[3].getColumn() + ") FROM " + table + " WHERE " +
+                                                primaryKey[0].getColumn() + " = ? AND " +
+                                                primaryKey[1].getColumn() + " = ? AND " +
+                                                primaryKey[2].getColumn() + " = ? AND " +
+                                                primaryKey[3].getColumn() + " != ? ");
                     setPrimaryKey();
                     setValues(find, primaryKey);
                     find.executeQuery();
@@ -463,362 +909,6 @@ public class DbTransferLog extends AbstractDbData {
         }
     }
 
-    /**
-     * Private constructor
-     * 
-     * @param session
-     */
-    private DbTransferLog(DbSession dBsession) {
-        super(dBsession);
-    }
-
-    /**
-     * For instance when getting updated information
-     * 
-     * @param preparedStatement
-     * @return the next updated DbTaskRunner
-     * @throws WaarpDatabaseNoConnectionException
-     * @throws WaarpDatabaseSqlException
-     */
-    public static DbTransferLog getFromStatement(
-            DbPreparedStatement preparedStatement)
-            throws WaarpDatabaseNoConnectionException, WaarpDatabaseSqlException {
-        DbTransferLog dbTaskRunner = new DbTransferLog(preparedStatement
-                .getDbSession());
-        dbTaskRunner.getValues(preparedStatement, dbTaskRunner.allFields);
-        dbTaskRunner.setFromArray();
-        dbTaskRunner.isSaved = true;
-        return dbTaskRunner;
-    }
-
-    /**
-     * @param session
-     * @param status
-     * @param limit
-     *            limit the number of rows
-     * @return the DbPreparedStatement for getting TransferLog according to status ordered by start
-     * @throws WaarpDatabaseNoConnectionException
-     * @throws WaarpDatabaseSqlException
-     */
-    public static DbPreparedStatement getStatusPrepareStament(
-            DbSession session, ReplyCode status, int limit)
-            throws WaarpDatabaseNoConnectionException, WaarpDatabaseSqlException {
-        String request = "SELECT " + selectAllFields + " FROM " + table;
-        if (status != null) {
-            request += " WHERE " + Columns.INFOSTATUS.name() + " = " +
-                    status.getCode() + " AND " + getLimitWhereCondition();
-        } else {
-            request += " WHERE " + getLimitWhereCondition();
-        }
-        request += " ORDER BY " + Columns.STARTTRANS.name() + " DESC ";
-        if (limit > 0) {
-            request = session.getAdmin().getDbModel().limitRequest(selectAllFields, request, limit);
-        }
-        return new DbPreparedStatement(session, request);
-    }
-
-    /**
-     * 
-     * @param session
-     * @param start
-     * @param stop
-     * @return the DbPreparedStatement for getting Selected Object, whatever their status
-     * @throws WaarpDatabaseNoConnectionException
-     * @throws WaarpDatabaseSqlException
-     */
-    public static DbPreparedStatement getLogPrepareStament(DbSession session,
-            Timestamp start, Timestamp stop)
-            throws WaarpDatabaseNoConnectionException, WaarpDatabaseSqlException {
-        return getLogPrepareStament(session, start, stop, null);
-    }
-
-    /**
-     *
-     * @param session
-     * @param start
-     * @param stop
-     * @return the DbPreparedStatement for getting Selected Object, whatever their status
-     * @throws WaarpDatabaseNoConnectionException
-     * @throws WaarpDatabaseSqlException
-     */
-    public static DbPreparedStatement getLogPrepareStament(DbSession session,
-            Timestamp start, Timestamp stop, ReplyCode status)
-            throws WaarpDatabaseNoConnectionException, WaarpDatabaseSqlException {
-
-        String statusWhereFilter = "";
-        if (status != null) {
-            statusWhereFilter = Columns.INFOSTATUS.name() + " = " +
-                status.getCode() + " AND ";
-        }
-
-        DbPreparedStatement preparedStatement = new DbPreparedStatement(session);
-        String request = "SELECT " + selectAllFields + " FROM " + table;
-        if (start != null && stop != null) {
-            request += " WHERE " + statusWhereFilter +
-                    Columns.STARTTRANS.name() + " >= ? AND " +
-                    Columns.STARTTRANS.name() + " <= ? AND " + getLimitWhereCondition() +
-                    " ORDER BY " + Columns.SPECIALID.name() + " DESC ";
-            preparedStatement.createPrepareStatement(request);
-            try {
-                preparedStatement.getPreparedStatement().setTimestamp(1, start);
-                preparedStatement.getPreparedStatement().setTimestamp(2, stop);
-            } catch (SQLException e) {
-                preparedStatement.realClose();
-                throw new WaarpDatabaseSqlException(e);
-            }
-        } else if (start != null) {
-            request += " WHERE " + statusWhereFilter +
-                    Columns.STARTTRANS.name() + " >= ? AND " + getLimitWhereCondition() +
-                    " ORDER BY " + Columns.SPECIALID.name() + " DESC ";
-            preparedStatement.createPrepareStatement(request);
-            try {
-                preparedStatement.getPreparedStatement().setTimestamp(1, start);
-            } catch (SQLException e) {
-                preparedStatement.realClose();
-                throw new WaarpDatabaseSqlException(e);
-            }
-        } else if (stop != null) {
-            request += " WHERE " + statusWhereFilter +
-                    Columns.STARTTRANS.name() + " <= ? AND " + getLimitWhereCondition() +
-                    " ORDER BY " + Columns.SPECIALID.name() + " DESC ";
-            preparedStatement.createPrepareStatement(request);
-            try {
-                preparedStatement.getPreparedStatement().setTimestamp(1, stop);
-            } catch (SQLException e) {
-                preparedStatement.realClose();
-                throw new WaarpDatabaseSqlException(e);
-            }
-        } else {
-            request += " WHERE " + statusWhereFilter + getLimitWhereCondition() +
-                    " ORDER BY " + Columns.SPECIALID.name() + " DESC ";
-            preparedStatement.createPrepareStatement(request);
-        }
-        return preparedStatement;
-    }
-
-    /**
-     * 
-     * @param session
-     * @return the DbPreparedStatement for getting Updated Object
-     * @throws WaarpDatabaseNoConnectionException
-     * @throws WaarpDatabaseSqlException
-     */
-    public static DbPreparedStatement getCountInfoPrepareStatement(DbSession session)
-            throws WaarpDatabaseNoConnectionException, WaarpDatabaseSqlException {
-        String request = "SELECT COUNT(" + Columns.SPECIALID.name() +
-                ") FROM " + table + " WHERE " +
-                Columns.STARTTRANS.name() + " >= ? AND " + getLimitWhereCondition() +
-                " AND " + Columns.UPDATEDINFO.name() + " = ? ";
-        DbPreparedStatement pstt = new DbPreparedStatement(session, request);
-        session.addLongTermPreparedStatement(pstt);
-        return pstt;
-    }
-
-    /**
-     * 
-     * @param pstt
-     * @param info
-     * @param time
-     * @return the number of elements (COUNT) from the statement
-     */
-    public static long getResultCountPrepareStatement(DbPreparedStatement pstt, UpdatedInfo info,
-            long time) {
-        long result = 0;
-        try {
-            finishSelectOrCountPrepareStatement(pstt, time);
-            pstt.getPreparedStatement().setInt(2, info.ordinal());
-            pstt.executeQuery();
-            if (pstt.getNext()) {
-                result = pstt.getResultSet().getLong(1);
-            }
-        } catch (WaarpDatabaseNoConnectionException e) {
-        } catch (WaarpDatabaseSqlException e) {
-        } catch (SQLException e) {
-        } finally {
-            pstt.close();
-        }
-        return result;
-    }
-
-    /**
-     * @param session
-     * @return the DbPreparedStatement for getting Runner according to status ordered by start
-     * @throws WaarpDatabaseNoConnectionException
-     * @throws WaarpDatabaseSqlException
-     */
-    public static DbPreparedStatement getCountStatusPrepareStatement(
-            DbSession session)
-            throws WaarpDatabaseNoConnectionException, WaarpDatabaseSqlException {
-        String request = "SELECT COUNT(" + Columns.SPECIALID.name() + ") FROM " + table;
-        request += " WHERE " + Columns.STARTTRANS.name() + " >= ? ";
-        request += " AND " + Columns.INFOSTATUS.name() + " = ? AND " + getLimitWhereCondition();
-        DbPreparedStatement prep = new DbPreparedStatement(session, request);
-        session.addLongTermPreparedStatement(prep);
-        return prep;
-    }
-
-    /**
-     * @param session
-     * @return the DbPreparedStatement for getting All according to status ordered by start
-     * @throws WaarpDatabaseNoConnectionException
-     * @throws WaarpDatabaseSqlException
-     */
-    public static DbPreparedStatement getCountAllPrepareStatement(
-            DbSession session)
-            throws WaarpDatabaseNoConnectionException, WaarpDatabaseSqlException {
-        String request = "SELECT COUNT(" + Columns.SPECIALID.name() + ") FROM " + table;
-        request += " WHERE " + Columns.STARTTRANS.name() + " >= ? ";
-        request += " AND " + getLimitWhereCondition();
-        DbPreparedStatement prep = new DbPreparedStatement(session, request);
-        session.addLongTermPreparedStatement(prep);
-        return prep;
-    }
-
-    /**
-     * 
-     * @param pstt
-     * @param error
-     * @param time
-     * @return the number of elements (COUNT) from the statement
-     */
-    public static long getResultCountPrepareStatement(DbPreparedStatement pstt, ReplyCode error,
-            long time) {
-        long result = 0;
-        try {
-            finishSelectOrCountPrepareStatement(pstt, time);
-            pstt.getPreparedStatement().setInt(2, error.getCode());
-            pstt.executeQuery();
-            if (pstt.getNext()) {
-                result = pstt.getResultSet().getLong(1);
-            }
-        } catch (WaarpDatabaseNoConnectionException e) {
-        } catch (WaarpDatabaseSqlException e) {
-        } catch (SQLException e) {
-        } finally {
-            pstt.close();
-        }
-        return result;
-    }
-
-    /**
-     * 
-     * @param pstt
-     * @return the number of elements (COUNT) from the statement
-     */
-    public static long getResultCountPrepareStatement(DbPreparedStatement pstt) {
-        long result = 0;
-        try {
-            pstt.executeQuery();
-            if (pstt.getNext()) {
-                result = pstt.getResultSet().getLong(1);
-            }
-        } catch (WaarpDatabaseNoConnectionException e) {
-        } catch (WaarpDatabaseSqlException e) {
-        } catch (SQLException e) {
-        } finally {
-            pstt.close();
-        }
-        return result;
-    }
-
-    /**
-     * Set the current time in the given updatedPreparedStatement
-     * 
-     * @param pstt
-     * @throws WaarpDatabaseNoConnectionException
-     * @throws WaarpDatabaseSqlException
-     */
-    public static void finishSelectOrCountPrepareStatement(DbPreparedStatement pstt)
-            throws WaarpDatabaseNoConnectionException, WaarpDatabaseSqlException {
-        finishSelectOrCountPrepareStatement(pstt, System.currentTimeMillis());
-    }
-
-    /**
-     * Set the current time in the given updatedPreparedStatement
-     * 
-     * @param pstt
-     * @throws WaarpDatabaseNoConnectionException
-     * @throws WaarpDatabaseSqlException
-     */
-    public static void finishSelectOrCountPrepareStatement(DbPreparedStatement pstt, long time)
-            throws WaarpDatabaseNoConnectionException, WaarpDatabaseSqlException {
-        Timestamp startlimit = new Timestamp(time);
-        try {
-            pstt.getPreparedStatement().setTimestamp(1, startlimit);
-        } catch (SQLException e) {
-            logger.error("Database SQL Error: Cannot set timestamp", e);
-            throw new WaarpDatabaseSqlException("Cannot set timestamp", e);
-        }
-    }
-
-    /**
-     * Running or not transfers are concerned
-     * 
-     * @param session
-     * @param in
-     *            True for Incoming, False for Outgoing
-     * @return the DbPreparedStatement for getting Runner according to in or out going way and Error
-     * @throws WaarpDatabaseNoConnectionException
-     * @throws WaarpDatabaseSqlException
-     */
-    public static DbPreparedStatement getCountInOutErrorPrepareStatement(
-            DbSession session, boolean in)
-            throws WaarpDatabaseNoConnectionException, WaarpDatabaseSqlException {
-        String request = "SELECT COUNT(" + Columns.SPECIALID.name() + ") FROM " + table;
-        String inCond = null;
-        if (in) {
-            inCond = " (" + Columns.MODETRANS.name() + " = '" + FtpCommandCode.APPE.name()
-                    + "' OR " +
-                    Columns.MODETRANS.name() + " = '" + FtpCommandCode.STOR.name() + "' OR " +
-                    Columns.MODETRANS.name() + " = '" + FtpCommandCode.STOU.name() + "') ";
-        } else {
-            inCond = " (" + Columns.MODETRANS.name() + " = '" + FtpCommandCode.RETR.name() + "') ";
-        }
-        request += " WHERE " + inCond;
-        request += " AND " + getLimitWhereCondition() + " ";
-        request += " AND " + Columns.STARTTRANS.name() + " >= ? ";
-        request += " AND " + Columns.UPDATEDINFO.name() + " = " + UpdatedInfo.INERROR.ordinal();
-        DbPreparedStatement prep = new DbPreparedStatement(session, request);
-        session.addLongTermPreparedStatement(prep);
-        return prep;
-    }
-
-    /**
-     * Running or not transfers are concerned
-     * 
-     * @param session
-     * @param in
-     *            True for Incoming, False for Outgoing
-     * @param running
-     *            True for Running only, False for all
-     * @return the DbPreparedStatement for getting Runner according to in or out going way
-     * @throws WaarpDatabaseNoConnectionException
-     * @throws WaarpDatabaseSqlException
-     */
-    public static DbPreparedStatement getCountInOutRunningPrepareStatement(
-            DbSession session, boolean in, boolean running)
-            throws WaarpDatabaseNoConnectionException, WaarpDatabaseSqlException {
-        String request = "SELECT COUNT(" + Columns.SPECIALID.name() + ") FROM " + table;
-        String inCond = null;
-        if (in) {
-            inCond = " (" + Columns.MODETRANS.name() + " = '" + FtpCommandCode.APPE.name()
-                    + "' OR " +
-                    Columns.MODETRANS.name() + " = '" + FtpCommandCode.STOR.name() + "' OR " +
-                    Columns.MODETRANS.name() + " = '" + FtpCommandCode.STOU.name() + "') ";
-        } else {
-            inCond = " (" + Columns.MODETRANS.name() + " = '" + FtpCommandCode.RETR.name() + "') ";
-        }
-        request += " WHERE " + inCond;
-        request += " AND " + getLimitWhereCondition() + " ";
-        request += " AND " + Columns.STARTTRANS.name() + " >= ? ";
-        if (running) {
-            request += " AND " + Columns.UPDATEDINFO.name() + " = " + UpdatedInfo.RUNNING.ordinal();
-        }
-        DbPreparedStatement prep = new DbPreparedStatement(session, request);
-        session.addLongTermPreparedStatement(prep);
-        return prep;
-    }
-
     @Override
     public void changeUpdatedInfo(UpdatedInfo info) {
         updatedInfo = info.ordinal();
@@ -828,7 +918,7 @@ public class DbTransferLog extends AbstractDbData {
 
     /**
      * Set the ReplyCode for the UpdatedInfo
-     * 
+     *
      * @param code
      */
     public void setReplyCodeExecutionStatus(ReplyCode code) {
@@ -840,7 +930,7 @@ public class DbTransferLog extends AbstractDbData {
     }
 
     /**
-     * 
+     *
      * @return The current UpdatedInfo value
      */
     public UpdatedInfo getUpdatedInfo() {
@@ -848,23 +938,11 @@ public class DbTransferLog extends AbstractDbData {
     }
 
     /**
-     * 
+     *
      * @return the ReplyCode code associated with the Updated Info
      */
     public ReplyCode getErrorInfo() {
         return infostatus;
-    }
-
-    /**
-     * @param filename
-     *            the filename to set
-     */
-    public void setFilename(String filename) {
-        if (!this.filename.equals(filename)) {
-            this.filename = filename;
-            allFields[Columns.FILENAME.ordinal()].setValue(this.filename);
-            isSaved = false;
-        }
     }
 
     /**
@@ -879,6 +957,18 @@ public class DbTransferLog extends AbstractDbData {
      */
     public String getFilename() {
         return filename;
+    }
+
+    /**
+     * @param filename
+     *            the filename to set
+     */
+    public void setFilename(String filename) {
+        if (!this.filename.equals(filename)) {
+            this.filename = filename;
+            allFields[Columns.FILENAME.ordinal()].setValue(this.filename);
+            isSaved = false;
+        }
     }
 
     /**
@@ -918,14 +1008,6 @@ public class DbTransferLog extends AbstractDbData {
     }
 
     /**
-     * @param stop
-     *            the stop to set
-     */
-    public void setStop(Timestamp stop) {
-        this.stop = stop;
-    }
-
-    /**
      * @return the mode
      */
     public String getMode() {
@@ -934,7 +1016,7 @@ public class DbTransferLog extends AbstractDbData {
 
     /**
      * This method is to be called each time an operation is happening on Runner
-     * 
+     *
      * @throws WaarpDatabaseException
      */
     public void saveStatus() throws WaarpDatabaseException {
@@ -951,13 +1033,13 @@ public class DbTransferLog extends AbstractDbData {
     @Override
     public String toString() {
         return "Transfer: on " +
-                filename + " SpecialId: " +
-                specialId + " Mode: " + mode + " isSender: " + isSender +
-                " User: " + user + " Account: " + account +
-                " Start: " + start + " Stop: " + stop +
-                " Internal: " + UpdatedInfo.values()[updatedInfo].name() +
-                ":" + infostatus.getMesg() +
-                " TransferInfo: " + infotransf;
+               filename + " SpecialId: " +
+               specialId + " Mode: " + mode + " isSender: " + isSender +
+               " User: " + user + " Account: " + account +
+               " Start: " + start + " Stop: " + stop +
+               " Internal: " + UpdatedInfo.values()[updatedInfo].name() +
+               ":" + infostatus.getMesg() +
+               " TransferInfo: " + infotransf;
     }
 
     /**
@@ -974,49 +1056,16 @@ public class DbTransferLog extends AbstractDbData {
         return stop;
     }
 
-    /*
-     * XXXIDXXX XXXUSERXXX XXXACCTXXX XXXFILEXXX XXXMODEXXX XXXSTATUSXXX XXXINFOXXX XXXUPINFXXX
-     * XXXSTARTXXX XXXSTOPXXX
-     */
-    private static final String XML_IDX = "IDX";
-    private static final String XML_USER = "USER";
-    private static final String XML_ACCT = "ACCT";
-    private static final String XML_FILE = "FILE";
-    private static final String XML_MODE = "MODE";
-    private static final String XML_STATUS = "STATUS";
-    private static final String XML_INFO = "INFO";
-    private static final String XML_UPDINFO = "UPDINFO";
-    private static final String XML_START = "START";
-    private static final String XML_STOP = "STOP";
-    private static final String XML_ROOT = "LOGS";
-    private static final String XML_ENTRY = "LOG";
     /**
-     * Structure of the Configuration file
-     * 
+     * @param stop
+     *            the stop to set
      */
-    private static final XmlDecl[] logDecls = {
-            // identity
-            new XmlDecl(XmlType.STRING, XML_IDX),
-            new XmlDecl(XmlType.STRING, XML_USER),
-            new XmlDecl(XmlType.STRING, XML_ACCT),
-            new XmlDecl(XmlType.STRING, XML_FILE),
-            new XmlDecl(XmlType.STRING, XML_MODE),
-            new XmlDecl(XmlType.STRING, XML_STATUS),
-            new XmlDecl(XmlType.STRING, XML_INFO),
-            new XmlDecl(XmlType.STRING, XML_UPDINFO),
-            new XmlDecl(XmlType.STRING, XML_START),
-            new XmlDecl(XmlType.STRING, XML_STOP),
-    };
-    /**
-     * Global Structure for Server Configuration
-     */
-    private static final XmlDecl[] logsElements = {
-            new XmlDecl(XML_ENTRY, XmlType.XVAL, XML_ROOT + "/" + XML_ENTRY,
-                    logDecls, true)
-    };
+    public void setStop(Timestamp stop) {
+        this.stop = stop;
+    }
 
     /**
-     * 
+     *
      * @return the associated XmlValue
      */
     private XmlValue[] saveIntoXmlValue() {
@@ -1043,7 +1092,7 @@ public class DbTransferLog extends AbstractDbData {
 
     /**
      * Save the current DbTransferLog to a file
-     * 
+     *
      * @param filename
      * @return The message for the HTTPS interface
      */
@@ -1079,86 +1128,17 @@ public class DbTransferLog extends AbstractDbData {
         return message;
     }
 
-    /**
-     * Exports DbTransferLogs to a file and purges the corresponding DbTransferLogs
-     *
-     * @param preparedStatement
-     *            the DbTransferLog as SELECT command to export (and purge)
-     * @param filename
-     *            the filename where the DbLogs will be exported
-     * @return The message for the HTTPS interface
-     */
-    public static String saveDbTransferLogFile(DbPreparedStatement preparedStatement,
-            String filename) {
-            Writer outWriter = null;
-            try {
-                outWriter = new FileWriter(filename);
-            } catch(IOException e) {
-                return "Cannot open file " + filename + ": " + e.getMessage();
-            }
-
-        return saveDbTransferLogFile(preparedStatement, outWriter, true);
-    }
-
-    /**
-     * Exports DbTransferLogs to a Writer object and  optionally purges
-     * the corresponding DbTransferLogs
-     *
-     * @param preparedStatement
-     *            the DbTransferLog as SELECT command to export (and purge)
-     * @param outWriter
-     *            a Writer object where the DbLogs will be written
-     * @param  purge
-     *            sets whether or not the selected results must be purged
-     * @return The message for the HTTPS interface
-     */
-    public static String saveDbTransferLogFile(DbPreparedStatement preparedStatement,
-            Writer outWriter, boolean purge) {
-        Document document = XmlUtil.createEmptyDocument();
-        XmlValue[] roots = new XmlValue[1];
-        XmlValue root = new XmlValue(logsElements[0]);
-        roots[0] = root;
-        String message = null;
-        try {
-            try {
-                preparedStatement.executeQuery();
-                while (preparedStatement.getNext()) {
-                    DbTransferLog log = DbTransferLog.getFromStatement(preparedStatement);
-                    XmlValue[] values = log.saveIntoXmlValue();
-                    if (values == null) {
-                        return "Error during export";
-                    }
-                    try {
-                        root.addValue(values);
-                    } catch (InvalidObjectException e) {
-                        logger.error("Error during Write DbTransferLog file", e);
-                        return "Error during purge";
-                    }
-
-                    if (purge) {
-                        log.delete();
-                    }
-                }
-            } catch (WaarpDatabaseNoConnectionException e) {
-                message = "Error during export or purge";
-            } catch (WaarpDatabaseSqlException e) {
-                message = "Error during export or purge";
-            } catch (WaarpDatabaseException e) {
-                message = "Error during export or purge";
-            }
-        } finally {
-            preparedStatement.realClose();
-        }
-
-        XmlUtil.write(document, roots);
-        try {
-            XmlUtil.saveDocument(outWriter, document);
-            message = "Logs exported " + (purge ? "and purged" : "")
-                    + " successfully";
-        } catch (IOException e1) {
-            logger.error("Cannot write to file since {}", e1.getMessage());
-            return message + " but cannot save file as export";
-        }
-        return message;
+    public static enum Columns {
+        FILENAME,
+        MODETRANS,
+        STARTTRANS,
+        STOPTRANS,
+        TRANSINFO,
+        INFOSTATUS,
+        UPDATEDINFO,
+        USERID,
+        ACCOUNTID,
+        HOSTID,
+        SPECIALID;
     }
 }

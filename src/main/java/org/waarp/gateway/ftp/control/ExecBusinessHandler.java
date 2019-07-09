@@ -1,23 +1,20 @@
 /**
- * Copyright 2009, Frederic Bregier, and individual contributors by the @author tags. See the
- * COPYRIGHT.txt in the distribution for a full listing of individual contributors.
- * 
- * This is free software; you can redistribute it and/or modify it under the terms of the GNU Lesser
- * General Public License as published by the Free Software Foundation; either version 3.0 of the
- * License, or (at your option) any later version.
- * 
- * This software is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License along with this
- * software; if not, write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor,
- * Boston, MA 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * Copyright 2009, Frederic Bregier, and individual contributors by the @author tags. See the COPYRIGHT.txt in the
+ * distribution for a full listing of individual contributors.
+ * <p>
+ * This is free software; you can redistribute it and/or modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either version 3.0 of the License, or (at your option) any
+ * later version.
+ * <p>
+ * This software is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ * <p>
+ * You should have received a copy of the GNU Lesser General Public License along with this software; if not, write to
+ * the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF site:
+ * http://www.fsf.org.
  */
 package org.waarp.gateway.ftp.control;
-
-import java.io.File;
-import java.io.IOException;
 
 import io.netty.channel.Channel;
 import org.waarp.common.command.ReplyCode;
@@ -49,12 +46,15 @@ import org.waarp.gateway.ftp.file.FileBasedDir;
 import org.waarp.gateway.kernel.exec.AbstractExecutor;
 import org.waarp.gateway.kernel.exec.R66PreparedTransferExecutor;
 
+import java.io.File;
+import java.io.IOException;
+
 /**
  * BusinessHandler implementation that allows pre and post actions on any operations and
  * specifically on transfer operations
- * 
+ *
  * @author Frederic Bregier
- * 
+ *
  */
 public class ExecBusinessHandler extends BusinessHandler {
     /**
@@ -86,133 +86,136 @@ public class ExecBusinessHandler extends BusinessHandler {
         }
         long specialId = auth.getSpecialId();
         ReplyCode replyCode = getFtpSession().getReplyCode();
-        logger.debug("Transfer done but action needed: "+(!(replyCode != ReplyCode.REPLY_250_REQUESTED_FILE_ACTION_OKAY && replyCode != ReplyCode.REPLY_226_CLOSING_DATA_CONNECTION)));
-        if (replyCode != ReplyCode.REPLY_250_REQUESTED_FILE_ACTION_OKAY && replyCode != ReplyCode.REPLY_226_CLOSING_DATA_CONNECTION) {
+        logger.debug("Transfer done but action needed: " +
+                     (!(replyCode != ReplyCode.REPLY_250_REQUESTED_FILE_ACTION_OKAY &&
+                        replyCode != ReplyCode.REPLY_226_CLOSING_DATA_CONNECTION)));
+        if (replyCode != ReplyCode.REPLY_250_REQUESTED_FILE_ACTION_OKAY &&
+            replyCode != ReplyCode.REPLY_226_CLOSING_DATA_CONNECTION) {
             // Do nothing
             String message = "Transfer done with code: " + getFtpSession().getReplyCode().getMesg();
             WaarpActionLogger.logErrorAction(dbFtpSession,
-                    specialId, transfer, message, getFtpSession().getReplyCode(), this);
+                                             specialId, transfer, message, getFtpSession().getReplyCode(), this);
             return;
         }
         // if STOR like: get file (can be STOU) and execute external action
         FtpCommandCode code = transfer.getCommand();
         logger.debug("Checking action vs auth after transfer: {}", code);
         switch (code) {
-            case RETR:
-                // nothing to do since All done
+        case RETR:
+            // nothing to do since All done
+            WaarpActionLogger.logAction(dbFtpSession, specialId,
+                                        "Retrieve executed: OK", this, getFtpSession().getReplyCode(),
+                                        UpdatedInfo.RUNNING);
+            break;
+        case APPE:
+        case STOR:
+        case STOU:
+            // execute the store command
+            WaarpFuture futureCompletion = new WaarpFuture(true);
+            String[] args = new String[6];
+            args[0] = auth.getUser();
+            args[1] = auth.getAccount();
+            args[2] = auth.getBaseDirectory();
+            FtpFile file;
+            try {
+                file = transfer.getFtpFile();
+            } catch (FtpNoFileException e1) {
+                // File cannot be sent
+                String message =
+                        "PostExecution in Error for Transfer since No File found: " +
+                        transfer.getCommand() + " " +
+                        transfer.getStatus() + " " + transfer.getPath();
+                CommandAbstractException exc = new Reply421Exception(
+                        "PostExecution in Error for Transfer since No File found");
+                WaarpActionLogger.logErrorAction(dbFtpSession,
+                                                 specialId, transfer, message, exc.code, this);
+                throw exc;
+            }
+            try {
+                args[3] = file.getFile();
+                File newfile = new File(args[2] + args[3]);
+
+                // Here the transfer is successful. If the file does not exist on disk
+                // We create it : the transfered file was empty.
+                try {
+                    newfile.createNewFile();
+                } catch (IOException e) {
+                    throw new Reply421Exception(
+                            "PostExecution in Error for Transfer since No File found");
+                } catch (SecurityException e) {
+                    throw new Reply421Exception(
+                            "PostExecution in Error for Transfer since No File found");
+                }
+
+                if (!newfile.canRead()) {
+                    // File cannot be sent
+                    String message =
+                            "PostExecution in Error for Transfer since File is not readable: " +
+                            transfer.getCommand() + " " +
+                            newfile.getAbsolutePath() + ":" + newfile.canRead() +
+                            " " + transfer.getStatus() + " " + transfer.getPath();
+                    CommandAbstractException exc =
+                            new Reply421Exception(
+                                    "Transfer done but force disconnection since an error occurs on PostOperation");
+                    WaarpActionLogger.logErrorAction(dbFtpSession,
+                                                     specialId, transfer, message, exc.code, this);
+                    throw exc;
+                }
+            } catch (CommandAbstractException e1) {
+                // File cannot be sent
+                String message =
+                        "PostExecution in Error for Transfer since No File found: " +
+                        transfer.getCommand() + " " +
+                        transfer.getStatus() + " " + transfer.getPath();
+                CommandAbstractException exc =
+                        new Reply421Exception(
+                                "Transfer done but force disconnection since an error occurs on PostOperation");
+                WaarpActionLogger.logErrorAction(dbFtpSession,
+                                                 specialId, transfer, message, exc.code, this);
+                throw exc;
+            }
+            args[4] = transfer.getCommand().toString();
+            args[5] = Long.toString(specialId);
+            AbstractExecutor executor =
+                    AbstractExecutor.createAbstractExecutor(auth, args, true, futureCompletion);
+            if (executor instanceof R66PreparedTransferExecutor) {
+                ((R66PreparedTransferExecutor) executor).setDbsession(dbR66Session);
+            }
+            executor.run();
+            try {
+                futureCompletion.await();
+            } catch (InterruptedException e) {
+            }
+            if (futureCompletion.isSuccess()) {
+                // All done
                 WaarpActionLogger.logAction(dbFtpSession, specialId,
-                        "Retrieve executed: OK", this, getFtpSession().getReplyCode(),
-                        UpdatedInfo.RUNNING);
-                break;
-            case APPE:
-            case STOR:
-            case STOU:
-                // execute the store command
-                WaarpFuture futureCompletion = new WaarpFuture(true);
-                String[] args = new String[6];
-                args[0] = auth.getUser();
-                args[1] = auth.getAccount();
-                args[2] = auth.getBaseDirectory();
-                FtpFile file;
-                try {
-                    file = transfer.getFtpFile();
-                } catch (FtpNoFileException e1) {
-                    // File cannot be sent
-                    String message =
-                            "PostExecution in Error for Transfer since No File found: " +
-                                    transfer.getCommand() + " " +
-                                    transfer.getStatus() + " " + transfer.getPath();
-                    CommandAbstractException exc = new Reply421Exception(
-                            "PostExecution in Error for Transfer since No File found");
-                    WaarpActionLogger.logErrorAction(dbFtpSession,
-                            specialId, transfer, message, exc.code, this);
-                    throw exc;
-                }
-                try {
-                    args[3] = file.getFile();
-                    File newfile = new File(args[2] + args[3]);
-                    
-                    // Here the transfer is successful. If the file does not exist on disk
-                    // We create it : the transfered file was empty.
-                    try {
-                        newfile.createNewFile();
-                    } catch (IOException e) {
-                        throw new Reply421Exception(
-                            "PostExecution in Error for Transfer since No File found");
-                    }  catch (SecurityException e) {
-                        throw new Reply421Exception(
-                            "PostExecution in Error for Transfer since No File found");
-                    }
-                    
-                    if (!newfile.canRead()) {
-                        // File cannot be sent
-                        String message =
-                                "PostExecution in Error for Transfer since File is not readable: " +
-                                        transfer.getCommand() + " " +
-                                        newfile.getAbsolutePath() + ":" + newfile.canRead() +
-                                        " " + transfer.getStatus() + " " + transfer.getPath();
-                        CommandAbstractException exc =
-                                new Reply421Exception(
-                                        "Transfer done but force disconnection since an error occurs on PostOperation");
-                        WaarpActionLogger.logErrorAction(dbFtpSession,
-                                specialId, transfer, message, exc.code, this);
-                        throw exc;
-                    }
-                } catch (CommandAbstractException e1) {
-                    // File cannot be sent
-                    String message =
-                            "PostExecution in Error for Transfer since No File found: " +
-                                    transfer.getCommand() + " " +
-                                    transfer.getStatus() + " " + transfer.getPath();
-                    CommandAbstractException exc =
-                            new Reply421Exception(
-                                    "Transfer done but force disconnection since an error occurs on PostOperation");
-                    WaarpActionLogger.logErrorAction(dbFtpSession,
-                            specialId, transfer, message, exc.code, this);
-                    throw exc;
-                }
-                args[4] = transfer.getCommand().toString();
-                args[5] = Long.toString(specialId);
-                AbstractExecutor executor =
-                        AbstractExecutor.createAbstractExecutor(auth, args, true, futureCompletion);
-                if (executor instanceof R66PreparedTransferExecutor) {
-                    ((R66PreparedTransferExecutor) executor).setDbsession(dbR66Session);
-                }
-                executor.run();
-                try {
-                    futureCompletion.await();
-                } catch (InterruptedException e) {
-                }
-                if (futureCompletion.isSuccess()) {
-                    // All done
-                    WaarpActionLogger.logAction(dbFtpSession, specialId,
-                            "Post-Command executed: OK", this, getFtpSession().getReplyCode(),
-                            UpdatedInfo.RUNNING);
-                } else {
-                    // File cannot be sent
-                    String message =
-                            "PostExecution in Error for Transfer: "
-                                    +
-                                    transfer.getCommand()
-                                    + " "
-                                    +
-                                    transfer.getStatus()
-                                    + " "
-                                    + transfer.getPath()
-                                    + "\n   "
-                                    + (futureCompletion.getCause() != null ?
-                                            futureCompletion.getCause().getMessage()
-                                            : "Internal error of PostExecution");
-                    CommandAbstractException exc =
-                            new Reply421Exception(
-                                    "Transfer done but force disconnection since an error occurs on PostOperation");
-                    WaarpActionLogger.logErrorAction(dbFtpSession,
-                            specialId, transfer, message, exc.code, this);
-                    throw exc;
-                }
-                break;
-            default:
-                // nothing to do
+                                            "Post-Command executed: OK", this, getFtpSession().getReplyCode(),
+                                            UpdatedInfo.RUNNING);
+            } else {
+                // File cannot be sent
+                String message =
+                        "PostExecution in Error for Transfer: "
+                        +
+                        transfer.getCommand()
+                        + " "
+                        +
+                        transfer.getStatus()
+                        + " "
+                        + transfer.getPath()
+                        + "\n   "
+                        + (futureCompletion.getCause() != null?
+                                futureCompletion.getCause().getMessage()
+                                : "Internal error of PostExecution");
+                CommandAbstractException exc =
+                        new Reply421Exception(
+                                "Transfer done but force disconnection since an error occurs on PostOperation");
+                WaarpActionLogger.logErrorAction(dbFtpSession,
+                                                 specialId, transfer, message, exc.code, this);
+                throw exc;
+            }
+            break;
+        default:
+            // nothing to do
         }
     }
 
@@ -222,19 +225,19 @@ public class ExecBusinessHandler extends BusinessHandler {
         long specialId =
                 ((FileBasedAuth) getFtpSession().getAuth()).getSpecialId();
         WaarpActionLogger.logErrorAction(dbFtpSession,
-                specialId, null, message, e.code, this);
+                                         specialId, null, message, e.code, this);
         ((FileBasedAuth) getFtpSession().getAuth()).setSpecialId(DbConstant.ILLEGALVALUE);
     }
 
     @Override
     public void afterRunCommandOk() throws CommandAbstractException {
         if (!(this.getFtpSession().getCurrentCommand() instanceof QUIT)
-                && this.dbR66Session != null) {
+            && this.dbR66Session != null) {
             long specialId =
                     ((FileBasedAuth) getFtpSession().getAuth()).getSpecialId();
             WaarpActionLogger.logAction(dbFtpSession, specialId,
-                    "Transfer Command fully executed: OK", this, getFtpSession().getReplyCode(),
-                    UpdatedInfo.DONE);
+                                        "Transfer Command fully executed: OK", this, getFtpSession().getReplyCode(),
+                                        UpdatedInfo.DONE);
             ((FileBasedAuth) getFtpSession().getAuth()).setSpecialId(DbConstant.ILLEGALVALUE);
         }
     }
@@ -254,7 +257,7 @@ public class ExecBusinessHandler extends BusinessHandler {
         // Test limits
         FtpConstraintLimitHandler constraints =
                 ((FileBasedConfiguration) getFtpSession().getConfiguration())
-                .constraintLimitHandler;
+                        .constraintLimitHandler;
         if (constraints != null) {
             if (!auth.isIdentified()) {
                 // ignore test since it can be an Admin connection
@@ -267,11 +270,13 @@ public class ExecBusinessHandler extends BusinessHandler {
                     if (constraints.checkConstraints()) {
                         // Really overload so refuse the command
                         logger.info("Server overloaded. {} Try later... \n"
-                                + getFtpSession().toString(), constraints.lastAlert);
+                                    + getFtpSession().toString(), constraints.lastAlert);
                         if (FileBasedConfiguration.fileBasedConfiguration.ftpMib != null) {
                             FileBasedConfiguration.fileBasedConfiguration.ftpMib.
-                                    notifyOverloaded("Server overloaded",
-                                            getFtpSession().toString());
+                                                                                        notifyOverloaded(
+                                                                                                "Server overloaded",
+                                                                                                getFtpSession()
+                                                                                                        .toString());
                         }
                         throw new Reply451Exception("Server overloaded. Try later...");
                     }
@@ -281,83 +286,83 @@ public class ExecBusinessHandler extends BusinessHandler {
         FtpCommandCode code = getFtpSession().getCurrentCommand().getCode();
         logger.debug("Checking action vs auth before command: {}", code);
         switch (code) {
-            case APPE:
-            case STOR:
-            case STOU:
-                auth.setSpecialId(specialId);
-                if (!auth.getCommandExecutor().isValidOperation(true)) {
-                    throw new Reply504Exception("STORe like operations are not allowed");
-                }
-                // create entry in log
-                specialId = WaarpActionLogger.logCreate(dbFtpSession,
-                        "PrepareTransfer: OK",
-                        getFtpSession().getCurrentCommand().getArg(),
-                        this);
-                auth.setSpecialId(specialId);
-                // nothing to do now
-                break;
-            case RETR:
-                auth.setSpecialId(specialId);
-                if (!auth.getCommandExecutor().isValidOperation(false)) {
-                    throw new Reply504Exception("RETRieve like operations are not allowed");
-                }
-                // create entry in log
-                specialId = WaarpActionLogger.logCreate(dbFtpSession,
-                        "PrepareTransfer: OK",
-                        getFtpSession().getCurrentCommand().getArg(),
-                        this);
-                auth.setSpecialId(specialId);
-                // execute the external retrieve command before the execution of RETR
-                WaarpFuture futureCompletion = new WaarpFuture(true);
-                String[] args = new String[6];
-                args[0] = auth.getUser();
-                args[1] = auth.getAccount();
-                args[2] = auth.getBaseDirectory();
-                String filename = getFtpSession().getCurrentCommand().getArg();
-                FtpFile file = getFtpSession().getDir().setFile(filename, false);
-                args[3] = file.getFile();
-                args[4] = code.toString();
-                args[5] = Long.toString(specialId);
-                AbstractExecutor executor =
-                        AbstractExecutor
-                                .createAbstractExecutor(auth, args, false, futureCompletion);
-                if (executor instanceof R66PreparedTransferExecutor) {
-                    ((R66PreparedTransferExecutor) executor).setDbsession(dbR66Session);
-                }
-                executor.run();
-                try {
-                    futureCompletion.await();
-                } catch (InterruptedException e) {
-                }
-                if (futureCompletion.isSuccess()) {
-                    // File should be ready
-                    if (!file.canRead()) {
-                        logger.error("PreExecution in Error for Transfer since " +
-                                "File downloaded but not ready to be retrieved: {} " +
-                                " {} \n   " + (futureCompletion.getCause() != null ?
-                                        futureCompletion.getCause().getMessage() :
-                                        "File downloaded but not ready to be retrieved"),
-                                args[4], args[3]);
-                        throw new Reply421Exception(
-                                "File downloaded but not ready to be retrieved");
-                    }
-                    WaarpActionLogger.logAction(dbFtpSession, specialId,
-                            "Pre-Command executed: OK", this, getFtpSession().getReplyCode(),
-                            UpdatedInfo.RUNNING);
-                } else {
-                    // File cannot be retrieved
+        case APPE:
+        case STOR:
+        case STOU:
+            auth.setSpecialId(specialId);
+            if (!auth.getCommandExecutor().isValidOperation(true)) {
+                throw new Reply504Exception("STORe like operations are not allowed");
+            }
+            // create entry in log
+            specialId = WaarpActionLogger.logCreate(dbFtpSession,
+                                                    "PrepareTransfer: OK",
+                                                    getFtpSession().getCurrentCommand().getArg(),
+                                                    this);
+            auth.setSpecialId(specialId);
+            // nothing to do now
+            break;
+        case RETR:
+            auth.setSpecialId(specialId);
+            if (!auth.getCommandExecutor().isValidOperation(false)) {
+                throw new Reply504Exception("RETRieve like operations are not allowed");
+            }
+            // create entry in log
+            specialId = WaarpActionLogger.logCreate(dbFtpSession,
+                                                    "PrepareTransfer: OK",
+                                                    getFtpSession().getCurrentCommand().getArg(),
+                                                    this);
+            auth.setSpecialId(specialId);
+            // execute the external retrieve command before the execution of RETR
+            WaarpFuture futureCompletion = new WaarpFuture(true);
+            String[] args = new String[6];
+            args[0] = auth.getUser();
+            args[1] = auth.getAccount();
+            args[2] = auth.getBaseDirectory();
+            String filename = getFtpSession().getCurrentCommand().getArg();
+            FtpFile file = getFtpSession().getDir().setFile(filename, false);
+            args[3] = file.getFile();
+            args[4] = code.toString();
+            args[5] = Long.toString(specialId);
+            AbstractExecutor executor =
+                    AbstractExecutor
+                            .createAbstractExecutor(auth, args, false, futureCompletion);
+            if (executor instanceof R66PreparedTransferExecutor) {
+                ((R66PreparedTransferExecutor) executor).setDbsession(dbR66Session);
+            }
+            executor.run();
+            try {
+                futureCompletion.await();
+            } catch (InterruptedException e) {
+            }
+            if (futureCompletion.isSuccess()) {
+                // File should be ready
+                if (!file.canRead()) {
                     logger.error("PreExecution in Error for Transfer since " +
-                            "File cannot be prepared to be retrieved: {} " +
-                            " {} \n   " + (futureCompletion.getCause() != null ?
-                                    futureCompletion.getCause().getMessage() :
-                                    "File cannot be prepared to be retrieved"),
-                            args[4], args[3]);
+                                 "File downloaded but not ready to be retrieved: {} " +
+                                 " {} \n   " + (futureCompletion.getCause() != null?
+                                         futureCompletion.getCause().getMessage() :
+                                         "File downloaded but not ready to be retrieved"),
+                                 args[4], args[3]);
                     throw new Reply421Exception(
-                            "File cannot be prepared to be retrieved");
+                            "File downloaded but not ready to be retrieved");
                 }
-                break;
-            default:
-                // nothing to do
+                WaarpActionLogger.logAction(dbFtpSession, specialId,
+                                            "Pre-Command executed: OK", this, getFtpSession().getReplyCode(),
+                                            UpdatedInfo.RUNNING);
+            } else {
+                // File cannot be retrieved
+                logger.error("PreExecution in Error for Transfer since " +
+                             "File cannot be prepared to be retrieved: {} " +
+                             " {} \n   " + (futureCompletion.getCause() != null?
+                                     futureCompletion.getCause().getMessage() :
+                                     "File cannot be prepared to be retrieved"),
+                             args[4], args[3]);
+                throw new Reply421Exception(
+                        "File cannot be prepared to be retrieved");
+            }
+            break;
+        default:
+            // nothing to do
         }
     }
 
@@ -379,12 +384,14 @@ public class ExecBusinessHandler extends BusinessHandler {
                 }
             }
             FileBasedConfiguration.fileBasedConfiguration.ftpMib.
-                    notifyError("Exception trapped", mesg);
+                                                                        notifyError("Exception trapped", mesg);
         }
         if (FileBasedConfiguration.fileBasedConfiguration.monitoring != null) {
             if (this.getFtpSession() != null) {
                 FileBasedConfiguration.fileBasedConfiguration.monitoring.
-                        updateCodeNoTransfer(this.getFtpSession().getReplyCode());
+                                                                                updateCodeNoTransfer(
+                                                                                        this.getFtpSession()
+                                                                                            .getReplyCode());
             }
         }
     }
@@ -409,7 +416,7 @@ public class ExecBusinessHandler extends BusinessHandler {
     public void executeChannelConnected(Channel channel) {
         if (AbstractExecutor.useDatabase) {
             if (org.waarp.openr66.database.DbConstant.admin != null &&
-                    org.waarp.openr66.database.DbConstant.admin.isActive()) {
+                org.waarp.openr66.database.DbConstant.admin.isActive()) {
                 try {
                     dbR66Session = new DbSession(org.waarp.openr66.database.DbConstant.admin, false);
                 } catch (WaarpDatabaseNoConnectionException e1) {
@@ -453,8 +460,10 @@ public class ExecBusinessHandler extends BusinessHandler {
     @Override
     public String getHelpMessage(String arg) {
         return "This FTP server is only intend as a Gateway. RETRieve actions may be unallowed.\n"
-                + "This FTP server refers to RFC 959, 775, 2389, 2428, 3659 and supports XCRC, XMD5 and XSHA1 commands.\n"
-                + "XCRC, XMD5 and XSHA1 take a simple filename as argument and return \"250 digest-value is the digest of filename\".";
+               +
+               "This FTP server refers to RFC 959, 775, 2389, 2428, 3659 and supports XCRC, XMD5 and XSHA1 commands.\n"
+               +
+               "XCRC, XMD5 and XSHA1 take a simple filename as argument and return \"250 digest-value is the digest of filename\".";
     }
 
     @Override
@@ -471,7 +480,7 @@ public class ExecBusinessHandler extends BusinessHandler {
     public String getOptsMessage(String[] args) throws CommandAbstractException {
         if (args.length > 0) {
             if (args[0].equalsIgnoreCase(FtpCommandCode.MLST.name()) ||
-                    args[0].equalsIgnoreCase(FtpCommandCode.MLSD.name())) {
+                args[0].equalsIgnoreCase(FtpCommandCode.MLSD.name())) {
                 return getMLSxOptsMessage(args);
             }
             throw new Reply502Exception("OPTS not implemented for " + args[0]);
@@ -481,7 +490,7 @@ public class ExecBusinessHandler extends BusinessHandler {
 
     @Override
     public AbstractCommand getSpecializedSiteCommand(FtpSession session,
-            String line) {
+                                                     String line) {
         if (getFtpSession() == null || getFtpSession().getAuth() == null) {
             return null;
         }

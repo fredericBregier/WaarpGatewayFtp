@@ -1,23 +1,20 @@
 /**
  * This file is part of Waarp Project.
- * 
- * Copyright 2009, Frederic Bregier, and individual contributors by the @author tags. See the
- * COPYRIGHT.txt in the distribution for a full listing of individual contributors.
- * 
- * All Waarp Project is free software: you can redistribute it and/or modify it under the terms of
- * the GNU General Public License as published by the Free Software Foundation, either version 3 of
- * the License, or (at your option) any later version.
- * 
- * Waarp is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even
- * the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General
- * Public License for more details.
- * 
+ * <p>
+ * Copyright 2009, Frederic Bregier, and individual contributors by the @author tags. See the COPYRIGHT.txt in the
+ * distribution for a full listing of individual contributors.
+ * <p>
+ * All Waarp Project is free software: you can redistribute it and/or modify it under the terms of the GNU General
+ * Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
+ * later version.
+ * <p>
+ * Waarp is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+ * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * <p>
  * You should have received a copy of the GNU General Public License along with Waarp . If not, see
  * <http://www.gnu.org/licenses/>.
  */
 package org.waarp.gateway.ftp.database.model;
-
-import java.sql.SQLException;
 
 import org.waarp.common.database.DbPreparedStatement;
 import org.waarp.common.database.DbRequest;
@@ -28,23 +25,25 @@ import org.waarp.common.database.exception.WaarpDatabaseSqlException;
 import org.waarp.gateway.ftp.database.DbConstant;
 import org.waarp.gateway.ftp.database.data.DbTransferLog;
 
+import java.sql.SQLException;
+
 /**
  * Oracle Database Model implementation
- * 
+ *
  * @author Frederic Bregier
- * 
+ *
  */
 public class DbModelOracle extends org.waarp.common.database.model.DbModelOracle {
     /**
      * Create the object and initialize if necessary the driver
-     * 
+     *
      * @param dbserver
      * @param dbuser
      * @param dbpasswd
      * @throws WaarpDatabaseNoConnectionException
      */
     public DbModelOracle(String dbserver,
-            String dbuser, String dbpasswd) throws WaarpDatabaseNoConnectionException {
+                         String dbuser, String dbpasswd) throws WaarpDatabaseNoConnectionException {
         super(dbserver, dbuser, dbpasswd);
     }
 
@@ -62,7 +61,7 @@ public class DbModelOracle extends org.waarp.common.database.model.DbModelOracle
         DbTransferLog.Columns[] acolumns = DbTransferLog.Columns.values();
         for (int i = 0; i < acolumns.length; i++) {
             action += acolumns[i].name() +
-                    DBType.getType(DbTransferLog.dbTypes[i]) + notNull + ", ";
+                      DBType.getType(DbTransferLog.dbTypes[i]) + notNull + ", ";
         }
         // Several columns for primary key
         action += constraint + " TRANSLOG_PK " + primaryKey + "(";
@@ -102,8 +101,8 @@ public class DbModelOracle extends org.waarp.common.database.model.DbModelOracle
 
         // cptrunner
         action = "CREATE SEQUENCE " + DbTransferLog.fieldseq +
-                " MINVALUE " + (DbConstant.ILLEGALVALUE + 1) +
-                " START WITH " + (DbConstant.ILLEGALVALUE + 1);
+                 " MINVALUE " + (DbConstant.ILLEGALVALUE + 1) +
+                 " START WITH " + (DbConstant.ILLEGALVALUE + 1);
         System.out.println(action);
         try {
             request.query(action);
@@ -122,8 +121,8 @@ public class DbModelOracle extends org.waarp.common.database.model.DbModelOracle
             throws WaarpDatabaseNoConnectionException {
         String action = "DROP SEQUENCE " + DbTransferLog.fieldseq;
         String action2 = "CREATE SEQUENCE " + DbTransferLog.fieldseq +
-                " MINVALUE " + (DbConstant.ILLEGALVALUE + 1) +
-                " START WITH " + (newvalue);
+                         " MINVALUE " + (DbConstant.ILLEGALVALUE + 1) +
+                         " START WITH " + (newvalue);
         DbRequest request = new DbRequest(session);
         try {
             request.query(action);
@@ -144,7 +143,7 @@ public class DbModelOracle extends org.waarp.common.database.model.DbModelOracle
     @Override
     public long nextSequence(DbSession dbSession)
             throws WaarpDatabaseNoConnectionException,
-            WaarpDatabaseSqlException, WaarpDatabaseNoDataException {
+                   WaarpDatabaseSqlException, WaarpDatabaseNoDataException {
         long result = DbConstant.ILLEGALVALUE;
         String action = "SELECT " + DbTransferLog.fieldseq + ".NEXTVAL FROM DUAL";
         DbPreparedStatement preparedStatement = new DbPreparedStatement(

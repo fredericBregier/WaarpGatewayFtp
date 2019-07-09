@@ -1,36 +1,20 @@
 /**
- * Copyright 2009, Frederic Bregier, and individual contributors by the @author tags. See the
- * COPYRIGHT.txt in the distribution for a full listing of individual contributors.
- * 
- * This is free software; you can redistribute it and/or modify it under the terms of the GNU Lesser
- * General Public License as published by the Free Software Foundation; either version 3.0 of the
- * License, or (at your option) any later version.
- * 
- * This software is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
- * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License along with this
- * software; if not, write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor,
- * Boston, MA 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ * Copyright 2009, Frederic Bregier, and individual contributors by the @author tags. See the COPYRIGHT.txt in the
+ * distribution for a full listing of individual contributors.
+ * <p>
+ * This is free software; you can redistribute it and/or modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either version 3.0 of the License, or (at your option) any
+ * later version.
+ * <p>
+ * This software is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details.
+ * <p>
+ * You should have received a copy of the GNU Lesser General Public License along with this software; if not, write to
+ * the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA, or see the FSF site:
+ * http://www.fsf.org.
  */
 package org.waarp.gateway.ftp.config;
-
-import java.io.File;
-import java.io.IOException;
-import java.io.InvalidObjectException;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.net.UnknownHostException;
-import java.util.Arrays;
-import java.util.Enumeration;
-import java.util.Iterator;
-import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
-
-import org.dom4j.Document;
-import org.dom4j.DocumentException;
-import org.dom4j.io.SAXReader;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
@@ -42,7 +26,9 @@ import io.netty.channel.group.DefaultChannelGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.handler.traffic.AbstractTrafficShapingHandler;
 import io.netty.util.concurrent.EventExecutorGroup;
-
+import org.dom4j.Document;
+import org.dom4j.DocumentException;
+import org.dom4j.io.SAXReader;
 import org.waarp.common.crypto.Des;
 import org.waarp.common.crypto.ssl.WaarpSecureKeyStore;
 import org.waarp.common.crypto.ssl.WaarpSslContextFactory;
@@ -89,18 +75,45 @@ import org.waarp.snmp.SnmpConfiguration;
 import org.waarp.snmp.WaarpMOFactory;
 import org.waarp.snmp.WaarpSnmpAgent;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InvalidObjectException;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.UnknownHostException;
+import java.util.Arrays;
+import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
+
 /**
  * FtpConfiguration based on a XML file
- * 
+ *
  * @author Frederic Bregier
- * 
+ *
  */
 public class FileBasedConfiguration extends FtpConfiguration {
+    /**
+     * RETRIEVE COMMAND
+     */
+    public static final String XML_RETRIEVE_COMMAND = "retrievecmd";
+    /**
+     * STORE COMMAND
+     */
+    public static final String XML_STORE_COMMAND = "storecmd";
+    /**
+     * DELAY RETRIEVE COMMAND
+     */
+    public static final String XML_DELAYRETRIEVE_COMMAND = "retrievedelay";
+    /**
+     * DELAY STORE COMMAND
+     */
+    public static final String XML_DELAYSTORE_COMMAND = "storedelay";
     /**
      * Internal Logger
      */
     private static final WaarpLogger logger = WaarpLoggerFactory.getLogger(FileBasedConfiguration.class);
-
     /**
      * SERVER HOSTID
      */
@@ -113,10 +126,9 @@ public class FileBasedConfiguration extends FtpConfiguration {
      * SERVER CRYPTO for Password
      */
     private static final String XML_PATH_CRYPTOKEY = "cryptokey";
-
     /**
      * Structure of the Configuration file
-     * 
+     *
      */
     private static final XmlDecl[] configIdentityDecls = {
             // identity
@@ -132,12 +144,10 @@ public class FileBasedConfiguration extends FtpConfiguration {
      * Use external Waarp Local Exec for ExecTask and ExecMoveTask
      */
     private static final String XML_USELOCALEXEC = "uselocalexec";
-
     /**
      * Address of Waarp Local Exec for ExecTask and ExecMoveTask
      */
     private static final String XML_LEXECADDR = "lexecaddr";
-
     /**
      * Port of Waarp Local Exec for ExecTask and ExecMoveTask
      */
@@ -154,12 +164,10 @@ public class FileBasedConfiguration extends FtpConfiguration {
      * SERVER SSL STOREKEY PATH ADMIN
      */
     private static final String XML_PATH_ADMIN_KEYPATH = "admkeypath";
-
     /**
      * SERVER SSL KEY PASS ADMIN
      */
     private static final String XML_PATH_ADMIN_KEYPASS = "admkeypass";
-
     /**
      * SERVER SSL STOREKEY PASS ADMIN
      */
@@ -172,10 +180,9 @@ public class FileBasedConfiguration extends FtpConfiguration {
      * Monitoring: snmp configuration file (if empty, no snmp support)
      */
     private static final String XML_MONITOR_SNMP_CONFIG = "snmpconfig";
-
     /**
      * Structure of the Configuration file
-     * 
+     *
      */
     private static final XmlDecl[] configServerParamDecls = {
             // server
@@ -203,7 +210,6 @@ public class FileBasedConfiguration extends FtpConfiguration {
      * RANGE of PORT for Passive Mode
      */
     private static final String XML_RANGE_PORT_MIN = "portmin";
-
     /**
      * RANGE of PORT for Passive Mode
      */
@@ -216,10 +222,9 @@ public class FileBasedConfiguration extends FtpConfiguration {
      * SERVER HTTPS PORT ADMINISTRATION
      */
     private static final String XML_SERVER_HTTPS_PORT = "serverhttpsport";
-
     /**
      * Structure of the Configuration file
-     * 
+     *
      */
     private static final XmlDecl[] configNetworkServerDecls = {
             // network
@@ -234,25 +239,22 @@ public class FileBasedConfiguration extends FtpConfiguration {
      * Database Driver as of oracle, mysql, postgresql, h2
      */
     private static final String XML_DBDRIVER = "dbdriver";
-
     /**
      * Database Server connection string as of jdbc:type://[host:port],[failoverhost:port]
      * .../[database][?propertyName1][ =propertyValue1][&propertyName2][=propertyValue2]...
      */
     private static final String XML_DBSERVER = "dbserver";
-
     /**
      * Database User
      */
     private static final String XML_DBUSER = "dbuser";
-
     /**
      * Database Password
      */
     private static final String XML_DBPASSWD = "dbpasswd";
     /**
      * Structure of the Configuration file
-     * 
+     *
      */
     private static final XmlDecl[] configDbDecls = {
             // db
@@ -269,7 +271,6 @@ public class FileBasedConfiguration extends FtpConfiguration {
      * Default number of threads in pool for Server.
      */
     private static final String XML_SERVER_THREAD = "serverthread";
-
     /**
      * Default number of threads in pool for Client.
      */
@@ -278,12 +279,10 @@ public class FileBasedConfiguration extends FtpConfiguration {
      * Memory Limit to use.
      */
     private static final String XML_MEMORY_LIMIT = "memorylimit";
-
     /**
      * Limit for Session
      */
     private static final String XML_LIMITSESSION = "sessionlimit";
-
     /**
      * Limit for Global
      */
@@ -305,12 +304,10 @@ public class FileBasedConfiguration extends FtpConfiguration {
      * Should a file MD5 SHA1 be computed using NIO
      */
     private static final String XML_USENIO = "usenio";
-
     /**
      * Should a file MD5 be computed using FastMD5
      */
     private static final String XML_USEFASTMD5 = "usefastmd5";
-
     /**
      * If using Fast MD5, should we used the binary JNI library, empty meaning no
      */
@@ -319,12 +316,10 @@ public class FileBasedConfiguration extends FtpConfiguration {
      * Usage of CPU Limit
      */
     private static final String XML_CSTRT_USECPULIMIT = "usecpulimit";
-
     /**
      * Usage of JDK CPU Limit (True) or SysMon CPU Limit
      */
     private static final String XML_CSTRT_USECPUJDKLIMIT = "usejdkcpulimit";
-
     /**
      * CPU LIMIT between 0 and 1, where 1 stands for no limit
      */
@@ -355,7 +350,7 @@ public class FileBasedConfiguration extends FtpConfiguration {
     private static final String XML_CSTRT_LIMITLOWBANDWIDTH = "limitlowbandwidth";
     /**
      * Structure of the Configuration file
-     * 
+     *
      */
     private static final XmlDecl[] configLimitDecls = {
             // limit
@@ -381,29 +376,9 @@ public class FileBasedConfiguration extends FtpConfiguration {
             new XmlDecl(XmlType.STRING, XML_FASTMD5),
             new XmlDecl(XmlType.INTEGER, XML_BLOCKSIZE)
     };
-
-    /**
-     * RETRIEVE COMMAND
-     */
-    public static final String XML_RETRIEVE_COMMAND = "retrievecmd";
-
-    /**
-     * STORE COMMAND
-     */
-    public static final String XML_STORE_COMMAND = "storecmd";
-
-    /**
-     * DELAY RETRIEVE COMMAND
-     */
-    public static final String XML_DELAYRETRIEVE_COMMAND = "retrievedelay";
-
-    /**
-     * DELAY STORE COMMAND
-     */
-    public static final String XML_DELAYSTORE_COMMAND = "storedelay";
     /**
      * Structure of the Configuration file
-     * 
+     *
      */
     private static final XmlDecl[] configExecDecls = {
             // Exec
@@ -418,7 +393,7 @@ public class FileBasedConfiguration extends FtpConfiguration {
     private static final String XML_SERVER_HOME = "serverhome";
     /**
      * Structure of the Configuration file
-     * 
+     *
      */
     private static final XmlDecl[] configDirectoryDecls = {
             // directory
@@ -464,7 +439,7 @@ public class FileBasedConfiguration extends FtpConfiguration {
 
     /**
      * Structure of the Configuration file
-     * 
+     *
      */
     private static final XmlDecl[] configSslDecls = {
             // ssl
@@ -494,14 +469,14 @@ public class FileBasedConfiguration extends FtpConfiguration {
      */
     private static final XmlDecl[] configServer = {
             new XmlDecl(XML_IDENTITY, XmlType.XVAL, XML_ROOT + XML_IDENTITY, configIdentityDecls,
-                    false),
+                        false),
             new XmlDecl(XML_SERVER, XmlType.XVAL, XML_ROOT + XML_SERVER, configServerParamDecls,
-                    false),
+                        false),
             new XmlDecl(XML_NETWORK, XmlType.XVAL, XML_ROOT + XML_NETWORK,
-                    configNetworkServerDecls, false),
+                        configNetworkServerDecls, false),
             new XmlDecl(XML_EXEC, XmlType.XVAL, XML_ROOT + XML_EXEC, configExecDecls, false),
             new XmlDecl(XML_DIRECTORY, XmlType.XVAL, XML_ROOT + XML_DIRECTORY,
-                    configDirectoryDecls, false),
+                        configDirectoryDecls, false),
             new XmlDecl(XML_LIMIT, XmlType.XVAL, XML_ROOT + XML_LIMIT, configLimitDecls, false),
             new XmlDecl(XML_DB, XmlType.XVAL, XML_ROOT + XML_DB, configDbDecls, false),
             new XmlDecl(XML_SSL, XmlType.XVAL, XML_ROOT + XML_SSL, configSslDecls, false)
@@ -519,7 +494,8 @@ public class FileBasedConfiguration extends FtpConfiguration {
      * Authentication Fields
      */
     private static final String XML_AUTHENTIFICATION_BASED = "/" +
-            XML_AUTHENTIFICATION_ROOT + "/" + XML_AUTHENTIFICATION_ENTRY;
+                                                             XML_AUTHENTIFICATION_ROOT + "/" +
+                                                             XML_AUTHENTIFICATION_ENTRY;
 
     /**
      * Authentication Fields
@@ -546,7 +522,7 @@ public class FileBasedConfiguration extends FtpConfiguration {
     private static final String XML_AUTHENTICATION_ADMIN = "admin";
     /**
      * Structure of the Configuration file
-     * 
+     *
      */
     private static final XmlDecl[] configAuthenticationDecls = {
             // identity
@@ -554,7 +530,7 @@ public class FileBasedConfiguration extends FtpConfiguration {
             new XmlDecl(XmlType.STRING, XML_AUTHENTICATION_PASSWDFILE),
             new XmlDecl(XmlType.STRING, XML_AUTHENTICATION_PASSWD),
             new XmlDecl(XML_AUTHENTICATION_ACCOUNT, XmlType.STRING, XML_AUTHENTICATION_ACCOUNT,
-                    true),
+                        true),
             new XmlDecl(XmlType.BOOLEAN, XML_AUTHENTICATION_ADMIN),
             // Exec
             new XmlDecl(XmlType.STRING, XML_RETRIEVE_COMMAND),
@@ -567,7 +543,7 @@ public class FileBasedConfiguration extends FtpConfiguration {
      */
     private static final XmlDecl[] authentElements = {
             new XmlDecl(XML_AUTHENTIFICATION_ENTRY, XmlType.XVAL, XML_AUTHENTIFICATION_BASED,
-                    configAuthenticationDecls, true)
+                        configAuthenticationDecls, true)
     };
 
     /**
@@ -578,20 +554,8 @@ public class FileBasedConfiguration extends FtpConfiguration {
      * Use to access directly the configuration
      */
     public static FileBasedConfiguration fileBasedConfiguration;
-    /**
-     * All authentications
-     */
-    private ConcurrentHashMap<String, SimpleAuth> authentications = new ConcurrentHashMap<String, SimpleAuth>();
-
-    /**
-     * File containing the authentications
-     */
-    private String authenticationFile;
-
-    /**
-     * Default HTTP server port
-     */
-    private int SERVER_HTTPSPORT = 8067;
+    private static XmlValue[] configuration = null;
+    private static XmlHash hashConfig = null;
     /**
      * Http Admin base
      */
@@ -604,20 +568,14 @@ public class FileBasedConfiguration extends FtpConfiguration {
      * Does this server will try to compress HTTP connections
      */
     public boolean useHttpCompression = false;
-
     /**
      * Does this server will use Waarp LocalExec Daemon for Execute
      */
     public boolean useLocalExec = false;
-
     /**
      * Crypto Key
      */
     public Des cryptoKey = null;
-    /**
-     * Server Administration Key
-     */
-    private byte[] SERVERADMINKEY = null;
     /**
      * FTP server ID
      */
@@ -630,28 +588,6 @@ public class FileBasedConfiguration extends FtpConfiguration {
      * Limit on CPU and Connection
      */
     public FtpConstraintLimitHandler constraintLimitHandler = null;
-
-    /**
-     * List of all Http Channels to enable the close call on them using Netty ChannelGroup
-     */
-    private ChannelGroup httpChannelGroup = null;
-    /**
-     * Bootstrap for Https server
-     */
-    private ServerBootstrap httpsBootstrap = null;
-    /**
-     * Boss Group for Http
-     */
-    private EventLoopGroup bossGroup = null;
-    /**
-     * Worker Group for Http
-     */
-    private EventLoopGroup workerGroup = null;
-
-    /**
-     * ThreadPoolExecutor for Http and Https Server
-     */
-    private EventExecutorGroup httpExecutor;
     /**
      * Monitoring: snmp configuration file (empty means no snmp support)
      */
@@ -668,7 +604,42 @@ public class FileBasedConfiguration extends FtpConfiguration {
      * Monitoring object
      */
     public FtpMonitoring monitoring = null;
-
+    /**
+     * All authentications
+     */
+    private ConcurrentHashMap<String, SimpleAuth> authentications = new ConcurrentHashMap<String, SimpleAuth>();
+    /**
+     * File containing the authentications
+     */
+    private String authenticationFile;
+    /**
+     * Default HTTP server port
+     */
+    private int SERVER_HTTPSPORT = 8067;
+    /**
+     * Server Administration Key
+     */
+    private byte[] SERVERADMINKEY = null;
+    /**
+     * List of all Http Channels to enable the close call on them using Netty ChannelGroup
+     */
+    private ChannelGroup httpChannelGroup = null;
+    /**
+     * Bootstrap for Https server
+     */
+    private ServerBootstrap httpsBootstrap = null;
+    /**
+     * Boss Group for Http
+     */
+    private EventLoopGroup bossGroup = null;
+    /**
+     * Worker Group for Http
+     */
+    private EventLoopGroup workerGroup = null;
+    /**
+     * ThreadPoolExecutor for Http and Https Server
+     */
+    private EventExecutorGroup httpExecutor;
     /**
      * @param classtype
      * @param businessHandler
@@ -679,15 +650,12 @@ public class FileBasedConfiguration extends FtpConfiguration {
      *            the FileParameter to use
      */
     public FileBasedConfiguration(Class<?> classtype,
-            Class<? extends BusinessHandler> businessHandler,
-            Class<? extends DataBusinessHandler> dataBusinessHandler,
-            FileParameterInterface fileParameter) {
+                                  Class<? extends BusinessHandler> businessHandler,
+                                  Class<? extends DataBusinessHandler> dataBusinessHandler,
+                                  FileParameterInterface fileParameter) {
         super(classtype, businessHandler, dataBusinessHandler, fileParameter);
         computeNbThreads();
     }
-
-    private static XmlValue[] configuration = null;
-    private static XmlHash hashConfig = null;
 
     private boolean loadIdentity() {
         XmlValue value = hashConfig.get(XML_SERVER_HOSTID);
@@ -782,7 +750,7 @@ public class FileBasedConfiguration extends FtpConfiguration {
         } catch (Exception e) {
             logger.error(
                     "Unable to Decrypt Server Password in Config file from: " +
-                            passwd, e);
+                    passwd, e);
             return false;
         }
         setSERVERKEY(decodedByteKeys);
@@ -804,7 +772,7 @@ public class FileBasedConfiguration extends FtpConfiguration {
             try {
                 httpBasePath =
                         FilesystemBasedDirImpl.normalizePath(file.getCanonicalPath()) +
-                                DirInterface.SEPARATOR;
+                        DirInterface.SEPARATOR;
             } catch (IOException e1) {
                 logger.error("Unable to set Http Admin Path in Config file");
                 return false;
@@ -842,7 +810,7 @@ public class FileBasedConfiguration extends FtpConfiguration {
                 try {
                     HttpSslInitializer.waarpSecureKeyStore =
                             new WaarpSecureKeyStore(keypath, keystorepass,
-                                    keypass);
+                                                    keypass);
                 } catch (CryptoException e) {
                     logger.error("Bad SecureKeyStore construction for AdminSsl");
                     return false;
@@ -888,7 +856,7 @@ public class FileBasedConfiguration extends FtpConfiguration {
         }
         try {
             setBaseDirectory(FilesystemBasedDirImpl.normalizePath(file
-                    .getCanonicalPath()));
+                                                                          .getCanonicalPath()));
         } catch (IOException e1) {
             logger.error("Unable to set Home in Config file: " + path);
             return false;
@@ -905,7 +873,7 @@ public class FileBasedConfiguration extends FtpConfiguration {
             }
             serverGlobalWriteLimit = serverGlobalReadLimit;
             logger.info("Global Limit: {}",
-                    serverGlobalReadLimit);
+                        serverGlobalReadLimit);
         }
         value = hashConfig.get(XML_LIMITSESSION);
         if (value != null && (!value.isEmpty())) {
@@ -915,7 +883,7 @@ public class FileBasedConfiguration extends FtpConfiguration {
             }
             serverChannelWriteLimit = serverChannelReadLimit;
             logger.info("SessionInterface Limit: {}",
-                    serverChannelReadLimit);
+                        serverChannelReadLimit);
         }
         delayLimit = AbstractTrafficShapingHandler.DEFAULT_CHECK_INTERVAL;
         value = hashConfig.get(XML_LIMITDELAY);
@@ -925,7 +893,7 @@ public class FileBasedConfiguration extends FtpConfiguration {
                 delayLimit = 0;
             }
             logger.info("Delay Limit: {}",
-                    delayLimit);
+                        delayLimit);
         }
         boolean useCpuLimit = false;
         boolean useCpuLimitJDK = false;
@@ -979,13 +947,13 @@ public class FileBasedConfiguration extends FtpConfiguration {
         if (highcpuLimit > 0) {
             constraintLimitHandler =
                     new FtpConstraintLimitHandler(getTIMEOUTCON(), useCpuLimit, useCpuLimitJDK,
-                            cpulimit, connlimit,
-                            lowcpuLimit, highcpuLimit, percentageDecrease, null, delay,
-                            limitLowBandwidth);
+                                                  cpulimit, connlimit,
+                                                  lowcpuLimit, highcpuLimit, percentageDecrease, null, delay,
+                                                  limitLowBandwidth);
         } else {
             constraintLimitHandler =
                     new FtpConstraintLimitHandler(getTIMEOUTCON(), useCpuLimit, useCpuLimitJDK,
-                            cpulimit, connlimit);
+                                                  cpulimit, connlimit);
         }
         value = hashConfig.get(XML_SERVER_THREAD);
         if (value != null && (!value.isEmpty())) {
@@ -1063,7 +1031,7 @@ public class FileBasedConfiguration extends FtpConfiguration {
 
     /**
      * Set the Crypto Key from the Document
-     * 
+     *
      * @param document
      * @return True if OK
      */
@@ -1090,7 +1058,7 @@ public class FileBasedConfiguration extends FtpConfiguration {
     }
 
     /**
-     * 
+     *
      * @return True if the global Exec parameters are correctly loaded
      */
     private boolean loadExec() {
@@ -1123,7 +1091,7 @@ public class FileBasedConfiguration extends FtpConfiguration {
 
     /**
      * Load database parameter
-     * 
+     *
      * @param document
      * @return True if OK
      */
@@ -1153,16 +1121,16 @@ public class FileBasedConfiguration extends FtpConfiguration {
             }
             String dbpasswd = value.getString();
             if (dbdriver == null || dbserver == null || dbuser == null ||
-                    dbpasswd == null || dbdriver.length() == 0 ||
-                    dbserver.length() == 0 || dbuser.length() == 0 ||
-                    dbpasswd.length() == 0) {
+                dbpasswd == null || dbdriver.length() == 0 ||
+                dbserver.length() == 0 || dbuser.length() == 0 ||
+                dbpasswd.length() == 0) {
                 logger.error("Unable to find Correct DB data in Config file");
                 return false;
             }
             try {
                 DbConstant.gatewayAdmin =
                         DbModelFactory.initialize(dbdriver, dbserver, dbuser, dbpasswd,
-                                true);
+                                                  true);
                 DbConstant.admin = DbConstant.gatewayAdmin;
             } catch (WaarpDatabaseNoConnectionException e2) {
                 logger.error("Unable to Connect to DB", e2);
@@ -1209,7 +1177,7 @@ public class FileBasedConfiguration extends FtpConfiguration {
             try {
                 FtpsInitializer.waarpSecureKeyStore =
                         new WaarpSecureKeyStore(keypath, keystorepass,
-                                keypass);
+                                                keypass);
             } catch (CryptoException e) {
                 logger.error("Bad SecureKeyStore construction");
                 return false;
@@ -1244,7 +1212,7 @@ public class FileBasedConfiguration extends FtpConfiguration {
             }
             try {
                 FtpsInitializer.waarpSecureKeyStore.initTrustStore(keypath,
-                        keystorepass, useClientAuthent);
+                                                                   keystorepass, useClientAuthent);
             } catch (CryptoException e) {
                 logger.error("Bad TrustKeyStore construction");
                 return false;
@@ -1281,7 +1249,7 @@ public class FileBasedConfiguration extends FtpConfiguration {
 
     /**
      * Initiate the configuration from the xml file for server
-     * 
+     *
      * @param filename
      * @return True if OK
      */
@@ -1366,7 +1334,8 @@ public class FileBasedConfiguration extends FtpConfiguration {
         httpChannelGroup = new DefaultChannelGroup("HttpOpenR66", httpExecutor.next());
 
         // Bind and start to accept incoming connections.
-        logger.warn("Start Https Support on port: " + SERVER_HTTPSPORT + " with "+ (useHttpCompression ? "" : "no") +" compression support");
+        logger.warn("Start Https Support on port: " + SERVER_HTTPSPORT + " with " + (useHttpCompression? "" : "no") +
+                    " compression support");
         ChannelFuture future = httpsBootstrap.bind(new InetSocketAddress(SERVER_HTTPSPORT));
         if (future.awaitUninterruptibly().isSuccess()) {
             httpChannelGroup.add(future.channel());
@@ -1392,7 +1361,7 @@ public class FileBasedConfiguration extends FtpConfiguration {
 
     /**
      * Configure the SNMP support if needed
-     * 
+     *
      * @throws FtpNoConnectionException
      */
     public void configureSnmp() throws FtpNoConnectionException {
@@ -1426,7 +1395,7 @@ public class FileBasedConfiguration extends FtpConfiguration {
 
     /**
      * Check the password for Shutdown
-     * 
+     *
      * @param password
      * @return True if the password is OK
      */
@@ -1439,7 +1408,7 @@ public class FileBasedConfiguration extends FtpConfiguration {
 
     /**
      * Initialize Authentication from current authenticationFile
-     * 
+     *
      * @param filename
      *            the filename from which authentication will be loaded
      * @param purge
@@ -1453,12 +1422,12 @@ public class FileBasedConfiguration extends FtpConfiguration {
             document = new SAXReader().read(filename);
         } catch (DocumentException e) {
             logger.error("Unable to read the XML Authentication file: " +
-                    filename, e);
+                         filename, e);
             return false;
         }
         if (document == null) {
             logger.error("Unable to read the XML Authentication file: " +
-                    filename);
+                         filename);
             return false;
         }
         XmlValue[] configuration = XmlUtil.read(document, authentElements);
@@ -1560,7 +1529,7 @@ public class FileBasedConfiguration extends FtpConfiguration {
                 }
             }
             SimpleAuth auth = new SimpleAuth(user, passwd, account,
-                    storcmd, stordelay, retrcmd, retrdelay);
+                                             storcmd, stordelay, retrcmd, retrdelay);
             auth.setAdmin(isAdmin);
             newAuthents.put(user, auth);
             hashConfig.clear();
@@ -1581,7 +1550,7 @@ public class FileBasedConfiguration extends FtpConfiguration {
 
     /**
      * Export the Authentication to the original files
-     * 
+     *
      * @param filename
      *            the filename where the authentication will be exported
      * @return True if successful
@@ -1691,14 +1660,16 @@ public class FileBasedConfiguration extends FtpConfiguration {
             auth = simpleAuths.nextElement();
             String newElt = format.replace("XXXUSERXXX", auth.getUser());
             newElt = newElt.replace("XXXPWDXXX", auth.getPassword());
-            if (auth.getStorCmd() != null)
+            if (auth.getStorCmd() != null) {
                 newElt = newElt.replace("XXXSTCXXX", auth.getStorCmd());
-            else
+            } else {
                 newElt = newElt.replace("XXXSTCXXX", "");
-            if (auth.getRetrCmd() != null)
+            }
+            if (auth.getRetrCmd() != null) {
                 newElt = newElt.replace("XXXRTCXXX", auth.getRetrCmd());
-            else
+            } else {
                 newElt = newElt.replace("XXXRTCXXX", "");
+            }
             newElt = newElt.replace("XXXSTDXXX", Long.toString(auth.getStorDelay()));
             newElt = newElt.replace("XXXRTDXXX", Long.toString(auth.getRetrDelay()));
             newElt = newElt.replace("XXXADMXXX", Boolean.toString(auth.isAdmin()));
@@ -1720,7 +1691,7 @@ public class FileBasedConfiguration extends FtpConfiguration {
 
     /**
      * Only available with Database support for Waarp
-     * 
+     *
      * @param format
      *            Format in HTML to use as ouput format
      * @param limit
@@ -1792,7 +1763,7 @@ public class FileBasedConfiguration extends FtpConfiguration {
     }
 
     /**
-     * 
+     *
      * @param rangePort
      *            the range of available ports for Passive connections
      */
@@ -1812,37 +1783,6 @@ public class FileBasedConfiguration extends FtpConfiguration {
      */
     public ChannelGroup getHttpChannelGroup() {
         return httpChannelGroup;
-    }
-
-    /**
-     * Finalize resources attached to handlers
-     * 
-     * @author Frederic Bregier
-     */
-    private static class GgChannelGroupFutureListener implements
-            ChannelGroupFutureListener {
-        EventExecutorGroup executorBoss;
-        EventExecutorGroup executorWorker;
-        String name;
-
-        public GgChannelGroupFutureListener(
-                String name,
-                EventExecutorGroup executorBoss, EventExecutorGroup executorWorker) {
-            this.name = name;
-            this.executorBoss = executorBoss;
-            this.executorWorker = executorWorker;
-        }
-
-        public void operationComplete(ChannelGroupFuture future)
-                throws Exception {
-            if (executorBoss != null) {
-                executorBoss.shutdownGracefully();
-            }
-            if (executorWorker != null) {
-                executorWorker.shutdownGracefully();
-            }
-            logger.info("Done with shutdown " + name);
-        }
     }
 
     @Override
@@ -1875,7 +1815,7 @@ public class FileBasedConfiguration extends FtpConfiguration {
     public void inShutdownProcess() {
         if (ftpMib != null) {
             ftpMib.notifyStartStop("Shutdown in progress for " + HOST_ID, "Gives extra seconds: "
-                    + getTIMEOUTCON());
+                                                                          + getTIMEOUTCON());
         }
     }
 
@@ -1891,5 +1831,36 @@ public class FileBasedConfiguration extends FtpConfiguration {
      */
     public void setAuthenticationFile(String authenticationFile) {
         this.authenticationFile = authenticationFile;
+    }
+
+    /**
+     * Finalize resources attached to handlers
+     *
+     * @author Frederic Bregier
+     */
+    private static class GgChannelGroupFutureListener implements
+                                                      ChannelGroupFutureListener {
+        EventExecutorGroup executorBoss;
+        EventExecutorGroup executorWorker;
+        String name;
+
+        public GgChannelGroupFutureListener(
+                String name,
+                EventExecutorGroup executorBoss, EventExecutorGroup executorWorker) {
+            this.name = name;
+            this.executorBoss = executorBoss;
+            this.executorWorker = executorWorker;
+        }
+
+        public void operationComplete(ChannelGroupFuture future)
+                throws Exception {
+            if (executorBoss != null) {
+                executorBoss.shutdownGracefully();
+            }
+            if (executorWorker != null) {
+                executorWorker.shutdownGracefully();
+            }
+            logger.info("Done with shutdown " + name);
+        }
     }
 }

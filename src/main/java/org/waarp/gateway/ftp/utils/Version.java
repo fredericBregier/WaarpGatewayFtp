@@ -1,6 +1,9 @@
 // DO NOT MODIFY - WILL BE OVERWRITTEN DURING THE BUILD PROCESS
 package org.waarp.gateway.ftp.utils;
-/** Provides the version information of Waarp Gateway FTP. */
+
+/**
+ * Provides the version information of Waarp Gateway FTP.
+ */
 public final class Version {
  /** The version identifier. */
  public static final String ID = "3.0.8";

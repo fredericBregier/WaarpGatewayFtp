@@ -1,27 +1,20 @@
 /**
  * This file is part of Waarp Project.
- *
- * Copyright 2009, Frederic Bregier, and individual contributors by the @author tags. See the
- * COPYRIGHT.txt in the distribution for a full listing of individual contributors.
- *
- * All Waarp Project is free software: you can redistribute it and/or modify it under the terms of
- * the GNU General Public License as published by the Free Software Foundation, either version 3 of
- * the License, or (at your option) any later version.
- *
- * Waarp is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even
- * the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General
- * Public License for more details.
- *
+ * <p>
+ * Copyright 2009, Frederic Bregier, and individual contributors by the @author tags. See the COPYRIGHT.txt in the
+ * distribution for a full listing of individual contributors.
+ * <p>
+ * All Waarp Project is free software: you can redistribute it and/or modify it under the terms of the GNU General
+ * Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
+ * later version.
+ * <p>
+ * Waarp is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+ * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * <p>
  * You should have received a copy of the GNU General Public License along with Waarp . If not, see
  * <http://www.gnu.org/licenses/>.
  */
 package org.waarp.gateway.ftp;
-
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
-import java.sql.Timestamp;
 
 import org.waarp.common.command.ReplyCode;
 import org.waarp.common.database.DbPreparedStatement;
@@ -36,6 +29,11 @@ import org.waarp.gateway.ftp.data.FileSystemBasedDataBusinessHandler;
 import org.waarp.gateway.ftp.database.DbConstant;
 import org.waarp.gateway.ftp.database.data.DbTransferLog;
 
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.sql.Timestamp;
 
 
 /**
@@ -46,15 +44,14 @@ import org.waarp.gateway.ftp.database.data.DbTransferLog;
  *
  */
 public class LogExport {
+    protected static Timestamp start;
+    protected static Timestamp stop;
     /**
      * Command Flags
      */
     private static boolean purge = false;
     private static boolean correctOnly = false;
     private static String destinationPath = null;
-    protected static Timestamp start;
-    protected static Timestamp stop;
-
     /**
      * Internal pointer to the destination writer object
      */
@@ -69,12 +66,13 @@ public class LogExport {
      * Usage for the command
      */
     private static String usage = "Need at least the configuration file as first argument then optionally\n"
-        + "    -correctOnly      Only exports successful transfers\n"
-        + "    -purge            Purge exported transfers\n"
-        + "    -out [filepath|-] The path to the file created\n"
-        + "                      Use '-' for stdout\n"
-        + "    -start timestamp  in format yyyyMMddHHmmssSSS possibly truncated and where one of ':-. ' can be separators\n"
-        + "    -stop timestamp   in same format than start\n";
+                                  + "    -correctOnly      Only exports successful transfers\n"
+                                  + "    -purge            Purge exported transfers\n"
+                                  + "    -out [filepath|-] The path to the file created\n"
+                                  + "                      Use '-' for stdout\n"
+                                  +
+                                  "    -start timestamp  in format yyyyMMddHHmmssSSS possibly truncated and where one of ':-. ' can be separators\n"
+                                  + "    -stop timestamp   in same format than start\n";
 
     /**
      * Verifies command line arguments and initialize internals (mainly config)
@@ -89,9 +87,9 @@ public class LogExport {
         }
 
         config = new FileBasedConfiguration(
-            ExecGatewayFtpServer.class, ExecBusinessHandler.class,
-            FileSystemBasedDataBusinessHandler.class,
-            new FilesystemBasedFileParameterImpl());
+                ExecGatewayFtpServer.class, ExecBusinessHandler.class,
+                FileSystemBasedDataBusinessHandler.class,
+                new FilesystemBasedFileParameterImpl());
 
         if (!config.setConfigurationServerFromXml(args[0])) {
             System.err.println("Bad main configuration");
@@ -121,9 +119,9 @@ public class LogExport {
     public static boolean setDestinationWriter() {
         if (destinationPath == null) {
             destinationPath = config.getBaseDirectory() +
-                FtpDir.SEPARATOR + config.ADMINNAME + FtpDir.SEPARATOR +
-                config.HOST_ID + "_logs_" + System.currentTimeMillis()
-                + ".xml";
+                              FtpDir.SEPARATOR + config.ADMINNAME + FtpDir.SEPARATOR +
+                              config.HOST_ID + "_logs_" + System.currentTimeMillis()
+                              + ".xml";
         }
 
         if (destinationPath.equalsIgnoreCase("-")) {
@@ -142,7 +140,7 @@ public class LogExport {
     /**
      * Parses command line arguments
      * @param  args command line arguments to parse
-     * @return      [description]
+     * @return [description]
      */
     static protected boolean getParams(String[] args) {
         if (args.length < 1) {
@@ -158,7 +156,7 @@ public class LogExport {
             } else if (args[i].equalsIgnoreCase("-out")) {
                 i++;
                 if (i >= args.length
-                        || (args[i].charAt(0) == '-' && args[i].length() > 1)) {
+                    || (args[i].charAt(0) == '-' && args[i].length() > 1)) {
                     System.err.println("Error: -out needs a value.\n\n" + usage);
                     return false;
                 }
@@ -166,7 +164,7 @@ public class LogExport {
             } else if (args[i].equalsIgnoreCase("-start")) {
                 i++;
                 if (i >= args.length
-                        || (args[i].charAt(0) == '-' && args[i].length() > 1)) {
+                    || (args[i].charAt(0) == '-' && args[i].length() > 1)) {
                     System.err.println("Error: -start needs a value.\n\n" + usage);
                     return false;
                 }
@@ -174,7 +172,7 @@ public class LogExport {
             } else if (args[i].equalsIgnoreCase("-stop")) {
                 i++;
                 if (i >= args.length
-                        || (args[i].charAt(0) == '-' && args[i].length() > 1)) {
+                    || (args[i].charAt(0) == '-' && args[i].length() > 1)) {
                     System.err.println("Error: -stop needs a value.\n\n" + usage);
                     return false;
                 }
@@ -186,7 +184,7 @@ public class LogExport {
 
     /**
      * Main logic for the command.
-     * @return      an error message or null
+     * @return an error message or null
      */
     protected static String run() {
         ReplyCode status = null;
@@ -197,18 +195,18 @@ public class LogExport {
         DbPreparedStatement preparedStatement = null;
         try {
             preparedStatement = DbTransferLog.getLogPrepareStament(
-                DbConstant.gatewayAdmin.getSession(), start, stop, status);
+                    DbConstant.gatewayAdmin.getSession(), start, stop, status);
 
         } catch (WaarpDatabaseNoConnectionException e) {
             return "An error occured while connecting to the database: "
-                + e.getMessage();
+                   + e.getMessage();
 
         } catch (WaarpDatabaseSqlException e) {
             return "An error occured with the database: " + e.getMessage();
         }
 
         return DbTransferLog.saveDbTransferLogFile(preparedStatement,
-            destinationWriter, purge);
+                                                   destinationWriter, purge);
     }
 
     /**

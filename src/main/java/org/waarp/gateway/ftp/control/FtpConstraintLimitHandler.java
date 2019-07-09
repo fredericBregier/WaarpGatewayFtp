@@ -1,17 +1,16 @@
 /**
  * This file is part of Waarp Project.
- * 
- * Copyright 2009, Frederic Bregier, and individual contributors by the @author tags. See the
- * COPYRIGHT.txt in the distribution for a full listing of individual contributors.
- * 
- * All Waarp Project is free software: you can redistribute it and/or modify it under the terms of
- * the GNU General Public License as published by the Free Software Foundation, either version 3 of
- * the License, or (at your option) any later version.
- * 
- * Waarp is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even
- * the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General
- * Public License for more details.
- * 
+ * <p>
+ * Copyright 2009, Frederic Bregier, and individual contributors by the @author tags. See the COPYRIGHT.txt in the
+ * distribution for a full listing of individual contributors.
+ * <p>
+ * All Waarp Project is free software: you can redistribute it and/or modify it under the terms of the GNU General
+ * Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any
+ * later version.
+ * <p>
+ * Waarp is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+ * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * <p>
  * You should have received a copy of the GNU General Public License along with Waarp . If not, see
  * <http://www.gnu.org/licenses/>.
  */
@@ -23,9 +22,9 @@ import org.waarp.gateway.ftp.config.FileBasedConfiguration;
 
 /**
  * Constraint Limit (CPU and connection - network and local -) handler.
- * 
+ *
  * @author Frederic Bregier
- * 
+ *
  */
 public class FtpConstraintLimitHandler extends WaarpConstraintLimitHandler {
 
@@ -50,13 +49,13 @@ public class FtpConstraintLimitHandler extends WaarpConstraintLimitHandler {
      *            limit = 4096)
      */
     public FtpConstraintLimitHandler(long timeoutcon,
-            boolean useJdkCpuLimit, double lowcpuLimit, double highcpuLimit,
-            double percentageDecrease, GlobalTrafficShapingHandler handler,
-            long delay, long limitLowBandwidth) {
+                                     boolean useJdkCpuLimit, double lowcpuLimit, double highcpuLimit,
+                                     double percentageDecrease, GlobalTrafficShapingHandler handler,
+                                     long delay, long limitLowBandwidth) {
         super(1000, timeoutcon,
-                useJdkCpuLimit, lowcpuLimit,
-                highcpuLimit, percentageDecrease, handler, delay,
-                limitLowBandwidth);
+              useJdkCpuLimit, lowcpuLimit,
+              highcpuLimit, percentageDecrease, handler, delay,
+              limitLowBandwidth);
     }
 
     /**
@@ -70,7 +69,7 @@ public class FtpConstraintLimitHandler extends WaarpConstraintLimitHandler {
      *            number of connection limit (0<= x)
      */
     public FtpConstraintLimitHandler(long timeoutcon, boolean useCpuLimit,
-            boolean useJdKCpuLimit, double cpulimit, int channellimit) {
+                                     boolean useJdKCpuLimit, double cpulimit, int channellimit) {
         super(1000, timeoutcon, useCpuLimit, useJdKCpuLimit, cpulimit, channellimit);
     }
 
@@ -101,20 +100,20 @@ public class FtpConstraintLimitHandler extends WaarpConstraintLimitHandler {
      *            limit = 4096)
      */
     public FtpConstraintLimitHandler(long timeoutcon,
-            boolean useCpuLimit, boolean useJdKCpuLimit, double cpulimit,
-            int channellimit, double lowcpuLimit, double highcpuLimit,
-            double percentageDecrease, GlobalTrafficShapingHandler handler,
-            long delay, long limitLowBandwidth) {
+                                     boolean useCpuLimit, boolean useJdKCpuLimit, double cpulimit,
+                                     int channellimit, double lowcpuLimit, double highcpuLimit,
+                                     double percentageDecrease, GlobalTrafficShapingHandler handler,
+                                     long delay, long limitLowBandwidth) {
         super(1000, timeoutcon,
-                useCpuLimit, useJdKCpuLimit,
-                cpulimit, channellimit, lowcpuLimit, highcpuLimit,
-                percentageDecrease, handler, delay, limitLowBandwidth);
+              useCpuLimit, useJdKCpuLimit,
+              cpulimit, channellimit, lowcpuLimit, highcpuLimit,
+              percentageDecrease, handler, delay, limitLowBandwidth);
     }
 
     @Override
     protected int getNumberLocalChannel() {
         return FileBasedConfiguration.fileBasedConfiguration.getFtpInternalConfiguration()
-                .getNumberSessions();
+                                                            .getNumberSessions();
     }
 
     @Override
