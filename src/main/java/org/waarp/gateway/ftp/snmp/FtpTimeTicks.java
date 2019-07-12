@@ -23,7 +23,6 @@ import org.waarp.snmp.interf.WaarpTimeTicks;
  * Ftp Exec TimeTicks SNMP implementation
  *
  * @author Frederic Bregier
- *
  */
 class FtpTimeTicks extends WaarpTimeTicks {
     /**

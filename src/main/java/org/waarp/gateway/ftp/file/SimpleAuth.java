@@ -24,7 +24,6 @@ import org.waarp.gateway.kernel.exec.AbstractExecutor.CommandExecutor;
  * Simple Authentication based on a previously load XML file.
  *
  * @author Frederic Bregier
- *
  */
 public class SimpleAuth {
     /**
@@ -102,6 +101,7 @@ public class SimpleAuth {
      * Is the given password a valid one
      *
      * @param newpassword
+     *
      * @return True if the password is valid (or any password is valid)
      */
     public boolean isPasswordValid(String newpassword) {
@@ -118,6 +118,7 @@ public class SimpleAuth {
      * Is the given account a valid one
      *
      * @param account
+     *
      * @return True if the account is valid (or any account is valid)
      */
     public boolean isAccountValid(String account) {
@@ -189,9 +190,7 @@ public class SimpleAuth {
     }
 
     /**
-     *
-     * @param isAdmin
-     *            True if the user should be an administrator
+     * @param isAdmin True if the user should be an administrator
      */
     public void setAdmin(boolean isAdmin) {
         this.isAdmin = isAdmin;

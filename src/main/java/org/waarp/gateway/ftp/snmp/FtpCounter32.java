@@ -23,7 +23,6 @@ import org.waarp.snmp.interf.WaarpCounter32;
  * Ftp Exec Counter32 SNMP implementation
  *
  * @author Frederic Bregier
- *
  */
 class FtpCounter32 extends WaarpCounter32 {
 

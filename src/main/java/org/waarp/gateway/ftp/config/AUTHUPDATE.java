@@ -27,14 +27,12 @@ import org.waarp.ftp.core.command.AbstractCommand;
 import java.io.File;
 
 /**
- * AUTHTUPDATE command: implements the command that will try to update the authentications from the
- * file given as argument or the original one if no argument is given.<br>
- * Two optional arguments exist:<br>
- * - PURGE: empty first the current authentications before applying the update<br>
- * - SAVE: save the final authentications on the original name given at startup.<br>
+ * AUTHTUPDATE command: implements the command that will try to update the authentications from the file given as
+ * argument or the original one if no argument is given.<br> Two optional arguments exist:<br> - PURGE: empty first the
+ * current authentications before applying the update<br> - SAVE: save the final authentications on the original name
+ * given at startup.<br>
  *
  * @author Frederic Bregier
- *
  */
 public class AUTHUPDATE extends AbstractCommand {
     /**

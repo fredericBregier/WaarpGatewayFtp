@@ -22,7 +22,6 @@ import java.util.concurrent.atomic.AtomicInteger;
  * Circular Value used by passive connections to find the next valid port to propose to the client.
  *
  * @author Frederic Bregier
- *
  */
 class CircularIntValue {
     /**

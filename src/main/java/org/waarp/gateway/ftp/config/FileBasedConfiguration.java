@@ -91,7 +91,6 @@ import java.util.concurrent.ConcurrentHashMap;
  * FtpConfiguration based on a XML file
  *
  * @author Frederic Bregier
- *
  */
 public class FileBasedConfiguration extends FtpConfiguration {
     /**
@@ -128,7 +127,6 @@ public class FileBasedConfiguration extends FtpConfiguration {
     private static final String XML_PATH_CRYPTOKEY = "cryptokey";
     /**
      * Structure of the Configuration file
-     *
      */
     private static final XmlDecl[] configIdentityDecls = {
             // identity
@@ -182,7 +180,6 @@ public class FileBasedConfiguration extends FtpConfiguration {
     private static final String XML_MONITOR_SNMP_CONFIG = "snmpconfig";
     /**
      * Structure of the Configuration file
-     *
      */
     private static final XmlDecl[] configServerParamDecls = {
             // server
@@ -224,7 +221,6 @@ public class FileBasedConfiguration extends FtpConfiguration {
     private static final String XML_SERVER_HTTPS_PORT = "serverhttpsport";
     /**
      * Structure of the Configuration file
-     *
      */
     private static final XmlDecl[] configNetworkServerDecls = {
             // network
@@ -254,7 +250,6 @@ public class FileBasedConfiguration extends FtpConfiguration {
     private static final String XML_DBPASSWD = "dbpasswd";
     /**
      * Structure of the Configuration file
-     *
      */
     private static final XmlDecl[] configDbDecls = {
             // db
@@ -296,8 +291,8 @@ public class FileBasedConfiguration extends FtpConfiguration {
      */
     private static final String XML_TIMEOUTCON = "timeoutcon";
     /**
-     * Size by default of block size for receive/sending files. Should be a multiple of 8192
-     * (maximum = 64K due to block limitation to 2 bytes)
+     * Size by default of block size for receive/sending files. Should be a multiple of 8192 (maximum = 64K due to block
+     * limitation to 2 bytes)
      */
     private static final String XML_BLOCKSIZE = "blocksize";
     /**
@@ -350,7 +345,6 @@ public class FileBasedConfiguration extends FtpConfiguration {
     private static final String XML_CSTRT_LIMITLOWBANDWIDTH = "limitlowbandwidth";
     /**
      * Structure of the Configuration file
-     *
      */
     private static final XmlDecl[] configLimitDecls = {
             // limit
@@ -378,7 +372,6 @@ public class FileBasedConfiguration extends FtpConfiguration {
     };
     /**
      * Structure of the Configuration file
-     *
      */
     private static final XmlDecl[] configExecDecls = {
             // Exec
@@ -393,7 +386,6 @@ public class FileBasedConfiguration extends FtpConfiguration {
     private static final String XML_SERVER_HOME = "serverhome";
     /**
      * Structure of the Configuration file
-     *
      */
     private static final XmlDecl[] configDirectoryDecls = {
             // directory
@@ -439,7 +431,6 @@ public class FileBasedConfiguration extends FtpConfiguration {
 
     /**
      * Structure of the Configuration file
-     *
      */
     private static final XmlDecl[] configSslDecls = {
             // ssl
@@ -522,7 +513,6 @@ public class FileBasedConfiguration extends FtpConfiguration {
     private static final String XML_AUTHENTICATION_ADMIN = "admin";
     /**
      * Structure of the Configuration file
-     *
      */
     private static final XmlDecl[] configAuthenticationDecls = {
             // identity
@@ -640,14 +630,12 @@ public class FileBasedConfiguration extends FtpConfiguration {
      * ThreadPoolExecutor for Http and Https Server
      */
     private EventExecutorGroup httpExecutor;
+
     /**
      * @param classtype
-     * @param businessHandler
-     *            class that will be used for BusinessHandler
-     * @param dataBusinessHandler
-     *            class that will be used for DataBusinessHandler
-     * @param fileParameter
-     *            the FileParameter to use
+     * @param businessHandler class that will be used for BusinessHandler
+     * @param dataBusinessHandler class that will be used for DataBusinessHandler
+     * @param fileParameter the FileParameter to use
      */
     public FileBasedConfiguration(Class<?> classtype,
                                   Class<? extends BusinessHandler> businessHandler,
@@ -1033,6 +1021,7 @@ public class FileBasedConfiguration extends FtpConfiguration {
      * Set the Crypto Key from the Document
      *
      * @param document
+     *
      * @return True if OK
      */
     private boolean setCryptoKey() {
@@ -1058,7 +1047,6 @@ public class FileBasedConfiguration extends FtpConfiguration {
     }
 
     /**
-     *
      * @return True if the global Exec parameters are correctly loaded
      */
     private boolean loadExec() {
@@ -1093,6 +1081,7 @@ public class FileBasedConfiguration extends FtpConfiguration {
      * Load database parameter
      *
      * @param document
+     *
      * @return True if OK
      */
     private boolean loadDatabase() {
@@ -1251,6 +1240,7 @@ public class FileBasedConfiguration extends FtpConfiguration {
      * Initiate the configuration from the xml file for server
      *
      * @param filename
+     *
      * @return True if OK
      */
     public boolean setConfigurationServerFromXml(String filename) {
@@ -1386,8 +1376,7 @@ public class FileBasedConfiguration extends FtpConfiguration {
     }
 
     /**
-     * @param serverkey
-     *            the SERVERADMINKEY to set
+     * @param serverkey the SERVERADMINKEY to set
      */
     public void setSERVERKEY(byte[] serverkey) {
         SERVERADMINKEY = serverkey;
@@ -1397,6 +1386,7 @@ public class FileBasedConfiguration extends FtpConfiguration {
      * Check the password for Shutdown
      *
      * @param password
+     *
      * @return True if the password is OK
      */
     public boolean checkPassword(String password) {
@@ -1409,10 +1399,9 @@ public class FileBasedConfiguration extends FtpConfiguration {
     /**
      * Initialize Authentication from current authenticationFile
      *
-     * @param filename
-     *            the filename from which authentication will be loaded
-     * @param purge
-     *            if True, the current authentications are totally replaced by the new ones
+     * @param filename the filename from which authentication will be loaded
+     * @param purge if True, the current authentications are totally replaced by the new ones
+     *
      * @return True if OK
      */
     @SuppressWarnings("unchecked")
@@ -1551,8 +1540,8 @@ public class FileBasedConfiguration extends FtpConfiguration {
     /**
      * Export the Authentication to the original files
      *
-     * @param filename
-     *            the filename where the authentication will be exported
+     * @param filename the filename where the authentication will be exported
+     *
      * @return True if successful
      */
     public boolean saveAuthenticationFile(String filename) {
@@ -1637,6 +1626,7 @@ public class FileBasedConfiguration extends FtpConfiguration {
 
     /**
      * @param user
+     *
      * @return the SimpleAuth if any for this user
      */
     public SimpleAuth getSimpleAuth(String user) {
@@ -1644,8 +1634,8 @@ public class FileBasedConfiguration extends FtpConfiguration {
     }
 
     /**
-     * @param format
-     *            Format in HTML to use as ouput format
+     * @param format Format in HTML to use as ouput format
+     *
      * @return the Html String containing the table of all Authentication entries
      */
     public String getHtmlAuth(String format) {
@@ -1692,10 +1682,9 @@ public class FileBasedConfiguration extends FtpConfiguration {
     /**
      * Only available with Database support for Waarp
      *
-     * @param format
-     *            Format in HTML to use as ouput format
-     * @param limit
-     *            number of TransferLog to populate
+     * @param format Format in HTML to use as ouput format
+     * @param limit number of TransferLog to populate
+     *
      * @return the Html String containing the table of all Transfer entries
      */
     public String getHtmlTransfer(String format, int limit) {
@@ -1763,9 +1752,7 @@ public class FileBasedConfiguration extends FtpConfiguration {
     }
 
     /**
-     *
-     * @param rangePort
-     *            the range of available ports for Passive connections
+     * @param rangePort the range of available ports for Passive connections
      */
     private void setRangePort(CircularIntValue rangePort) {
         setProperty(RANGE_PORT, rangePort);

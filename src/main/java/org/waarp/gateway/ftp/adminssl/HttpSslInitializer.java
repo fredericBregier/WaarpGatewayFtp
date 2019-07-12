@@ -30,7 +30,6 @@ import org.waarp.gateway.ftp.config.FileBasedConfiguration;
 
 /**
  * @author Frederic Bregier
- *
  */
 public class HttpSslInitializer extends ChannelInitializer<SocketChannel> {
     public static WaarpSslContextFactory waarpSslContextFactory;

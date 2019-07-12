@@ -17,6 +17,9 @@
  * Interface for Apache Daemon tool to run as a Service
  *
  * @author Frederic Bregier
+ * <p>
+ * Interface for Apache Daemon tool to run as a Service
+ * @author Frederic Bregier
  */
 /**
  * Interface for Apache Daemon tool to run as a Service

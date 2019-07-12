@@ -30,7 +30,6 @@ import org.waarp.gateway.ftp.config.FileBasedConfiguration;
  * Engine used to start and stop the real Gateway Ftp service
  *
  * @author Frederic Bregier
- *
  */
 public class FtpEngine extends EngineAbstract {
     public static final WaarpFuture closeFuture = new WaarpFuture(true);

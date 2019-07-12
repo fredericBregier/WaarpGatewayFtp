@@ -27,15 +27,14 @@ import java.io.File;
  * FtpFile implementation based on true directories and files
  *
  * @author Frederic Bregier
- *
  */
 public class FileBasedFile extends FilesystemBasedFtpFile {
     /**
      * @param session
-     * @param fileBasedDir
-     *            It is not necessary the directory that owns this file.
+     * @param fileBasedDir It is not necessary the directory that owns this file.
      * @param path
      * @param append
+     *
      * @throws CommandAbstractException
      */
     public FileBasedFile(FtpSession session, FileBasedDir fileBasedDir,

@@ -36,7 +36,6 @@ import org.waarp.gateway.ftp.database.data.DbTransferLog;
  * Class to help to log any actions through the interface of Waarp
  *
  * @author Frederic Bregier
- *
  */
 public class WaarpActionLogger {
     /**

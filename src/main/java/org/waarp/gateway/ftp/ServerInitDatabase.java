@@ -31,7 +31,6 @@ import org.waarp.gateway.ftp.database.DbConstant;
  * Program to initialize the database for Waarp Ftp Exec
  *
  * @author Frederic Bregier
- *
  */
 public class ServerInitDatabase {
     /**
@@ -59,8 +58,7 @@ public class ServerInitDatabase {
     }
 
     /**
-     * @param args
-     *            as config_database file [rules_directory host_authent limit_configuration]
+     * @param args as config_database file [rules_directory host_authent limit_configuration]
      */
     public static void main(String[] args) {
         WaarpLoggerFactory.setDefaultFactory(new WaarpSlf4JLoggerFactory(null));

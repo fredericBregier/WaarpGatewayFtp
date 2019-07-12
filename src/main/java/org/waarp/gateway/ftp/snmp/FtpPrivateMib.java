@@ -48,7 +48,6 @@ import org.waarp.snmp.utils.WaarpUptime;
  * FTP Private MIB implementation
  *
  * @author Frederic Bregier
- *
  */
 public class FtpPrivateMib implements WaarpInterfaceMib {
     public static final String SnmpName = "Waarp GW FTP SNMP";
@@ -340,7 +339,7 @@ public class FtpPrivateMib implements WaarpInterfaceMib {
     public SysUpTime upTime = null;
     /**
      * need to add ".port" like "6666" Only in TCP (no UDP supported for Waarp)
-     *
+     * <p>
      * example: rootEnterpriseMib+"66666"+".1.1.4.";
      */
     public String applicationProtocolBase = null;
@@ -414,9 +413,7 @@ public class FtpPrivateMib implements WaarpInterfaceMib {
     public WaarpSnmpAgent agent;
 
     /**
-     *
-     * @param port
-     *            port used by FTP server
+     * @param port port used by FTP server
      */
     public FtpPrivateMib(int port) {
         srootOIDWaarp = rootEnterpriseMib.toString() + "." +
@@ -762,7 +759,6 @@ public class FtpPrivateMib implements WaarpInterfaceMib {
      * MIB entry levels
      *
      * @author Frederic Bregier
-     *
      */
     public static enum MibLevel {
         staticInfo, globalInfo, detailedInfo, errorInfo, trapInfo
@@ -772,7 +768,6 @@ public class FtpPrivateMib implements WaarpInterfaceMib {
      * Notification Elements
      *
      * @author Frederic Bregier
-     *
      */
     public static enum NotificationElements {
         TrapShutdown(1),
@@ -805,7 +800,6 @@ public class FtpPrivateMib implements WaarpInterfaceMib {
      * Notification for a task trap
      *
      * @author Frederic Bregier
-     *
      */
     public static enum NotificationTasks {
         filenameInfo, modeTransInfo, startTransInfo, infoStatusInfo, userIdInfo,
@@ -820,7 +814,6 @@ public class FtpPrivateMib implements WaarpInterfaceMib {
      * Definition part
      *
      * @author Frederic Bregier
-     *
      */
     public static enum WaarpDefinitionIndex {
         applName,
@@ -839,7 +832,6 @@ public class FtpPrivateMib implements WaarpInterfaceMib {
      * Global part
      *
      * @author Frederic Bregier
-     *
      */
     public static enum WaarpGlobalValuesIndex {
         applUptime,
@@ -878,7 +870,6 @@ public class FtpPrivateMib implements WaarpInterfaceMib {
      * Detailed part
      *
      * @author Frederic Bregier
-     *
      */
     public static enum WaarpDetailedValuesIndex {
         reply_000(ReplyCode.REPLY_000_SPECIAL_NOSTATUS),
@@ -923,7 +914,6 @@ public class FtpPrivateMib implements WaarpInterfaceMib {
      * Error part
      *
      * @author Frederic Bregier
-     *
      */
     public static enum WaarpErrorValuesIndex {
         reply_421(ReplyCode.REPLY_421_SERVICE_NOT_AVAILABLE_CLOSING_CONTROL_CONNECTION),
@@ -965,7 +955,6 @@ public class FtpPrivateMib implements WaarpInterfaceMib {
      * Oper Status (as defined in Net Application SNMP)
      *
      * @author Frederic Bregier
-     *
      */
     public static enum OperStatus {
         up(1), down(2), halted(3), congested(4), restarting(5), quiescing(6);

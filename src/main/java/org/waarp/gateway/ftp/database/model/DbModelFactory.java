@@ -25,7 +25,6 @@ import org.waarp.common.database.model.DbType;
  * Factory to store the Database Model object
  *
  * @author Frederic Bregier
- *
  */
 public class DbModelFactory extends org.waarp.common.database.model.DbModelFactory {
 
@@ -37,6 +36,7 @@ public class DbModelFactory extends org.waarp.common.database.model.DbModelFacto
      * @param dbuser
      * @param dbpasswd
      * @param write
+     *
      * @throws WaarpDatabaseNoConnectionException
      */
     public static DbAdmin initialize(String dbdriver, String dbserver,

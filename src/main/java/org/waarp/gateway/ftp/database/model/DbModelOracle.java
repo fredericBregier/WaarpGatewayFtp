@@ -31,7 +31,6 @@ import java.sql.SQLException;
  * Oracle Database Model implementation
  *
  * @author Frederic Bregier
- *
  */
 public class DbModelOracle extends org.waarp.common.database.model.DbModelOracle {
     /**
@@ -40,6 +39,7 @@ public class DbModelOracle extends org.waarp.common.database.model.DbModelOracle
      * @param dbserver
      * @param dbuser
      * @param dbpasswd
+     *
      * @throws WaarpDatabaseNoConnectionException
      */
     public DbModelOracle(String dbserver,

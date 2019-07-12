@@ -35,11 +35,10 @@ import org.waarp.gateway.kernel.session.HttpAuthInterface;
 import java.io.File;
 
 /**
- * FtpAuth implementation based on a list of (user/password/account) stored in a xml file load at
- * startup from configuration.
+ * FtpAuth implementation based on a list of (user/password/account) stored in a xml file load at startup from
+ * configuration.
  *
  * @author Frederic Bregier
- *
  */
 public class FileBasedAuth extends FilesystemBasedFtpAuth implements HttpAuthInterface {
     /**
@@ -71,14 +70,13 @@ public class FileBasedAuth extends FilesystemBasedFtpAuth implements HttpAuthInt
     }
 
     /**
-     * @param user
-     *            the user to set
-     * @return (NOOP, 230) if the user is OK, else return the following command that must follow
-     *         (usually PASS) and the associated reply
-     * @throws Reply421Exception
-     *             if there is a problem during the authentication
-     * @throws Reply530Exception
-     *             if there is a problem during the authentication
+     * @param user the user to set
+     *
+     * @return (NOOP, 230) if the user is OK, else return the following command that must follow (usually PASS) and the
+     * associated reply
+     *
+     * @throws Reply421Exception if there is a problem during the authentication
+     * @throws Reply530Exception if there is a problem during the authentication
      */
     @Override
     protected NextCommandReply setBusinessUser(String user)
@@ -97,16 +95,16 @@ public class FileBasedAuth extends FilesystemBasedFtpAuth implements HttpAuthInt
     }
 
     /**
-     * Set the password according to any implementation and could set the rootFromAuth. If NOOP is
-     * returned, isIdentifed must be TRUE. A special case is implemented for test user.
+     * Set the password according to any implementation and could set the rootFromAuth. If NOOP is returned, isIdentifed
+     * must be TRUE. A special case is implemented for test user.
      *
      * @param password
-     * @return (NOOP, 230) if the Password is OK, else return the following command that must follow
-     *         (usually ACCT) and the associated reply
-     * @throws Reply421Exception
-     *             if there is a problem during the authentication
-     * @throws Reply530Exception
-     *             if there is a problem during the authentication
+     *
+     * @return (NOOP, 230) if the Password is OK, else return the following command that must follow (usually ACCT) and
+     * the associated reply
+     *
+     * @throws Reply421Exception if there is a problem during the authentication
+     * @throws Reply530Exception if there is a problem during the authentication
      */
     @Override
     protected NextCommandReply setBusinessPassword(String password)
@@ -123,16 +121,16 @@ public class FileBasedAuth extends FilesystemBasedFtpAuth implements HttpAuthInt
     }
 
     /**
-     * Set the account according to any implementation and could set the rootFromAuth. If NOOP is
-     * returned, isIdentifed must be TRUE.
+     * Set the account according to any implementation and could set the rootFromAuth. If NOOP is returned, isIdentifed
+     * must be TRUE.
      *
      * @param account
-     * @return (NOOP, 230) if the Account is OK, else return the following command that must follow
-     *         and the associated reply
-     * @throws Reply421Exception
-     *             if there is a problem during the authentication
-     * @throws Reply530Exception
-     *             if there is a problem during the authentication
+     *
+     * @return (NOOP, 230) if the Account is OK, else return the following command that must follow and the associated
+     * reply
+     *
+     * @throws Reply421Exception if there is a problem during the authentication
+     * @throws Reply530Exception if there is a problem during the authentication
      */
     @Override
     protected NextCommandReply setBusinessAccount(String account)
@@ -213,15 +211,13 @@ public class FileBasedAuth extends FilesystemBasedFtpAuth implements HttpAuthInt
     }
 
     /**
-     * @param specialId
-     *            the specialId to set
+     * @param specialId the specialId to set
      */
     public void setSpecialId(long specialId) {
         this.specialId = specialId;
     }
 
     /**
-     *
      * @return the associated Command Executor
      */
     public CommandExecutor getCommandExecutor() {

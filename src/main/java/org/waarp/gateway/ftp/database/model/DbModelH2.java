@@ -31,7 +31,6 @@ import java.sql.SQLException;
  * H2 Database Model implementation
  *
  * @author Frederic Bregier
- *
  */
 public class DbModelH2 extends org.waarp.common.database.model.DbModelH2 {
     /**
@@ -40,6 +39,7 @@ public class DbModelH2 extends org.waarp.common.database.model.DbModelH2 {
      * @param dbserver
      * @param dbuser
      * @param dbpasswd
+     *
      * @throws WaarpDatabaseNoConnectionException
      */
     public DbModelH2(String dbserver,

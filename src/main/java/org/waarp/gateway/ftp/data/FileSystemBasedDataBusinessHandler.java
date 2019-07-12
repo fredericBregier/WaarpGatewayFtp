@@ -23,7 +23,6 @@ import org.waarp.ftp.core.data.handler.DataBusinessHandler;
  * DataBusinessHandler implementation based on Simple Filesystem : do nothing
  *
  * @author Frederic Bregier
- *
  */
 public class FileSystemBasedDataBusinessHandler extends DataBusinessHandler {
     @Override

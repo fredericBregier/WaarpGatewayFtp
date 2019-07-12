@@ -31,7 +31,6 @@ import java.sql.SQLException;
  * PostGreSQL Database Model implementation
  *
  * @author Frederic Bregier
- *
  */
 public class DbModelPostgresql extends org.waarp.common.database.model.DbModelPostgresql {
     /**

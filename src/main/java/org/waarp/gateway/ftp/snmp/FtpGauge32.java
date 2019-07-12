@@ -23,7 +23,6 @@ import org.waarp.snmp.interf.WaarpGauge32;
  * Ftp Exec Gauge32 SNMP implementation
  *
  * @author Frederic Bregier
- *
  */
 class FtpGauge32 extends WaarpGauge32 {
 

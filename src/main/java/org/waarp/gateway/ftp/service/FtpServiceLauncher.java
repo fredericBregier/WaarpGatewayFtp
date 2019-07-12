@@ -21,7 +21,6 @@ import org.waarp.common.service.ServiceLauncher;
 
 /**
  * @author Frederic Bregier
- *
  */
 public class FtpServiceLauncher extends ServiceLauncher {
 

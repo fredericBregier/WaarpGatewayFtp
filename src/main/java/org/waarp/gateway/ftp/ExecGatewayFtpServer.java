@@ -29,11 +29,10 @@ import org.waarp.gateway.kernel.exec.AbstractExecutor;
 import org.waarp.openr66.protocol.configuration.Configuration;
 
 /**
- * Exec FTP Server using simple authentication (XML FileInterface based), and standard Directory and
- * FileInterface implementation (Filesystem based).
+ * Exec FTP Server using simple authentication (XML FileInterface based), and standard Directory and FileInterface
+ * implementation (Filesystem based).
  *
  * @author Frederic Bregier
- *
  */
 public class ExecGatewayFtpServer {
     /**

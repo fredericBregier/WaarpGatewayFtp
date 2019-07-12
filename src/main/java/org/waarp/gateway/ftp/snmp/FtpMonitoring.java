@@ -40,7 +40,6 @@ import org.waarp.snmp.interf.WaarpInterfaceMonitor;
  * SNMP Monitoring class for FTP Exec
  *
  * @author Frederic Bregier
- *
  */
 public class FtpMonitoring implements WaarpInterfaceMonitor {
     private static final int ref421 =
@@ -108,7 +107,6 @@ public class FtpMonitoring implements WaarpInterfaceMonitor {
     }
 
     /**
-     *
      * @param session
      */
     public FtpMonitoring(DbSession session) {

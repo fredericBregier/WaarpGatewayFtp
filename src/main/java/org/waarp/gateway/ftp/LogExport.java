@@ -37,11 +37,9 @@ import java.sql.Timestamp;
 
 
 /**
- * Program to export log history from database to a file and optionally
- * purge exported entries.
+ * Program to export log history from database to a file and optionally purge exported entries.
  *
  * @author Bruno Carlin
- *
  */
 public class LogExport {
     protected static Timestamp start;
@@ -77,9 +75,9 @@ public class LogExport {
     /**
      * Verifies command line arguments and initialize internals (mainly config)
      *
-     * @param  args command line arguments
-     * @return the result of the initialization. if an error occured at
-     *         this stage, return value will be false
+     * @param args command line arguments
+     *
+     * @return the result of the initialization. if an error occured at this stage, return value will be false
      */
     protected static boolean initialize(String[] args) {
         if (!getParams(args)) {
@@ -105,14 +103,10 @@ public class LogExport {
     }
 
     /**
-     * Creates and sets destinationWriter according to the following logic
-     * based on the value of the '-out' command line argument:
-     * - if no value is given, a default path is computed (the same as
-     *   online export, i.e. in [data directory]/[admin name])
-     * - if the value '-' is given,
-     *   destinationWriter is the standard output (System.out)
-     * - if any other value is given, then it is considered as the path to
-     *   the destination file
+     * Creates and sets destinationWriter according to the following logic based on the value of the '-out' command line
+     * argument: - if no value is given, a default path is computed (the same as online export, i.e. in [data
+     * directory]/[admin name]) - if the value '-' is given, destinationWriter is the standard output (System.out) - if
+     * any other value is given, then it is considered as the path to the destination file
      *
      * @return a bollean indicating the success in opening the Writer.
      */
@@ -139,7 +133,9 @@ public class LogExport {
 
     /**
      * Parses command line arguments
-     * @param  args command line arguments to parse
+     *
+     * @param args command line arguments to parse
+     *
      * @return [description]
      */
     static protected boolean getParams(String[] args) {
@@ -184,6 +180,7 @@ public class LogExport {
 
     /**
      * Main logic for the command.
+     *
      * @return an error message or null
      */
     protected static String run() {
@@ -211,6 +208,7 @@ public class LogExport {
 
     /**
      * Command Entry point
+     *
      * @param args command line arguments
      */
     public static void main(String[] args) {

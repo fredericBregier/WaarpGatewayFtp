@@ -22,7 +22,6 @@ import org.waarp.common.database.DbAdmin;
  * Constants value for database
  *
  * @author Frederic Bregier
- *
  */
 public class DbConstant extends org.waarp.common.database.DbConstant {
     /**

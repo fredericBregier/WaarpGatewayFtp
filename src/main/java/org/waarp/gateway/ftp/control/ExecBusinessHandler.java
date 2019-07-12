@@ -50,11 +50,10 @@ import java.io.File;
 import java.io.IOException;
 
 /**
- * BusinessHandler implementation that allows pre and post actions on any operations and
- * specifically on transfer operations
+ * BusinessHandler implementation that allows pre and post actions on any operations and specifically on transfer
+ * operations
  *
  * @author Frederic Bregier
- *
  */
 public class ExecBusinessHandler extends BusinessHandler {
     /**

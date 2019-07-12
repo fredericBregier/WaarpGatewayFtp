@@ -73,7 +73,6 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * @author Frederic Bregier
  * @author Bruno Carlin
- *
  */
 public class HttpSslHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
     public static final int LIMITROW = 48;// better if it can be divided by 4
@@ -105,8 +104,7 @@ public class HttpSslHandler extends SimpleChannelInboundHandler<FullHttpRequest>
     private volatile boolean forceClose = false;
     private volatile boolean shutdown = false;
     /**
-     * The Database connection attached to this NetworkChannel shared among all associated
-     * LocalChannels in the session
+     * The Database connection attached to this NetworkChannel shared among all associated LocalChannels in the session
      */
     private DbSession dbSession = null;
     /**

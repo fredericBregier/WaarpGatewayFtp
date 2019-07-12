@@ -17,6 +17,8 @@
  * Main class for the Exec FTP server based on Filesystem and simple authentication.
  *
  * @author "Frederic Bregier"
+ * @apiviz.landmark Main class for the Exec FTP server based on Filesystem and simple authentication.
+ * @author "Frederic Bregier"
  * @apiviz.landmark
  */
 /**

@@ -25,7 +25,6 @@ import org.waarp.ftp.filesystembased.FilesystemBasedFtpDir;
  * FtpFile implementation based on true directories and files
  *
  * @author Frederic Bregier
- *
  */
 public class FileBasedDir extends FilesystemBasedFtpDir {
     /**

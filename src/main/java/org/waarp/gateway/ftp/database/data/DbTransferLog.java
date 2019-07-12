@@ -52,7 +52,6 @@ import java.util.Set;
  *
  * @author Frederic Bregier
  * @author Bruno Carlin
- *
  */
 public class DbTransferLog extends AbstractDbData {
     public static final int[] dbTypes = {
@@ -112,7 +111,6 @@ public class DbTransferLog extends AbstractDbData {
     private static final String XML_ENTRY = "LOG";
     /**
      * Structure of the Configuration file
-     *
      */
     private static final XmlDecl[] logDecls = {
             // identity
@@ -167,6 +165,7 @@ public class DbTransferLog extends AbstractDbData {
      * @param infostatus
      * @param info
      * @param updatedInfo
+     *
      * @throws WaarpDatabaseException
      */
     public DbTransferLog(DbSession dbSession, String user, String account,
@@ -198,6 +197,7 @@ public class DbTransferLog extends AbstractDbData {
      * @param user
      * @param account
      * @param specialId
+     *
      * @throws WaarpDatabaseException
      */
     public DbTransferLog(DbSession dbSession, String user, String account, long specialId)
@@ -220,7 +220,6 @@ public class DbTransferLog extends AbstractDbData {
     }
 
     /**
-     *
      * @return the condition to limit access to the row concerned by the Host
      */
     private static String getLimitWhereCondition() {
@@ -232,7 +231,9 @@ public class DbTransferLog extends AbstractDbData {
      * For instance when getting updated information
      *
      * @param preparedStatement
+     *
      * @return the next updated DbTaskRunner
+     *
      * @throws WaarpDatabaseNoConnectionException
      * @throws WaarpDatabaseSqlException
      */
@@ -250,9 +251,10 @@ public class DbTransferLog extends AbstractDbData {
     /**
      * @param session
      * @param status
-     * @param limit
-     *            limit the number of rows
+     * @param limit limit the number of rows
+     *
      * @return the DbPreparedStatement for getting TransferLog according to status ordered by start
+     *
      * @throws WaarpDatabaseNoConnectionException
      * @throws WaarpDatabaseSqlException
      */
@@ -274,11 +276,12 @@ public class DbTransferLog extends AbstractDbData {
     }
 
     /**
-     *
      * @param session
      * @param start
      * @param stop
+     *
      * @return the DbPreparedStatement for getting Selected Object, whatever their status
+     *
      * @throws WaarpDatabaseNoConnectionException
      * @throws WaarpDatabaseSqlException
      */
@@ -289,11 +292,12 @@ public class DbTransferLog extends AbstractDbData {
     }
 
     /**
-     *
      * @param session
      * @param start
      * @param stop
+     *
      * @return the DbPreparedStatement for getting Selected Object, whatever their status
+     *
      * @throws WaarpDatabaseNoConnectionException
      * @throws WaarpDatabaseSqlException
      */
@@ -353,9 +357,10 @@ public class DbTransferLog extends AbstractDbData {
     }
 
     /**
-     *
      * @param session
+     *
      * @return the DbPreparedStatement for getting Updated Object
+     *
      * @throws WaarpDatabaseNoConnectionException
      * @throws WaarpDatabaseSqlException
      */
@@ -371,10 +376,10 @@ public class DbTransferLog extends AbstractDbData {
     }
 
     /**
-     *
      * @param pstt
      * @param info
      * @param time
+     *
      * @return the number of elements (COUNT) from the statement
      */
     public static long getResultCountPrepareStatement(DbPreparedStatement pstt, UpdatedInfo info,
@@ -398,7 +403,9 @@ public class DbTransferLog extends AbstractDbData {
 
     /**
      * @param session
+     *
      * @return the DbPreparedStatement for getting Runner according to status ordered by start
+     *
      * @throws WaarpDatabaseNoConnectionException
      * @throws WaarpDatabaseSqlException
      */
@@ -415,7 +422,9 @@ public class DbTransferLog extends AbstractDbData {
 
     /**
      * @param session
+     *
      * @return the DbPreparedStatement for getting All according to status ordered by start
+     *
      * @throws WaarpDatabaseNoConnectionException
      * @throws WaarpDatabaseSqlException
      */
@@ -431,10 +440,10 @@ public class DbTransferLog extends AbstractDbData {
     }
 
     /**
-     *
      * @param pstt
      * @param error
      * @param time
+     *
      * @return the number of elements (COUNT) from the statement
      */
     public static long getResultCountPrepareStatement(DbPreparedStatement pstt, ReplyCode error,
@@ -457,8 +466,8 @@ public class DbTransferLog extends AbstractDbData {
     }
 
     /**
-     *
      * @param pstt
+     *
      * @return the number of elements (COUNT) from the statement
      */
     public static long getResultCountPrepareStatement(DbPreparedStatement pstt) {
@@ -481,6 +490,7 @@ public class DbTransferLog extends AbstractDbData {
      * Set the current time in the given updatedPreparedStatement
      *
      * @param pstt
+     *
      * @throws WaarpDatabaseNoConnectionException
      * @throws WaarpDatabaseSqlException
      */
@@ -493,6 +503,7 @@ public class DbTransferLog extends AbstractDbData {
      * Set the current time in the given updatedPreparedStatement
      *
      * @param pstt
+     *
      * @throws WaarpDatabaseNoConnectionException
      * @throws WaarpDatabaseSqlException
      */
@@ -511,9 +522,10 @@ public class DbTransferLog extends AbstractDbData {
      * Running or not transfers are concerned
      *
      * @param session
-     * @param in
-     *            True for Incoming, False for Outgoing
+     * @param in True for Incoming, False for Outgoing
+     *
      * @return the DbPreparedStatement for getting Runner according to in or out going way and Error
+     *
      * @throws WaarpDatabaseNoConnectionException
      * @throws WaarpDatabaseSqlException
      */
@@ -543,11 +555,11 @@ public class DbTransferLog extends AbstractDbData {
      * Running or not transfers are concerned
      *
      * @param session
-     * @param in
-     *            True for Incoming, False for Outgoing
-     * @param running
-     *            True for Running only, False for all
+     * @param in True for Incoming, False for Outgoing
+     * @param running True for Running only, False for all
+     *
      * @return the DbPreparedStatement for getting Runner according to in or out going way
+     *
      * @throws WaarpDatabaseNoConnectionException
      * @throws WaarpDatabaseSqlException
      */
@@ -578,10 +590,9 @@ public class DbTransferLog extends AbstractDbData {
     /**
      * Exports DbTransferLogs to a file and purges the corresponding DbTransferLogs
      *
-     * @param preparedStatement
-     *            the DbTransferLog as SELECT command to export (and purge)
-     * @param filename
-     *            the filename where the DbLogs will be exported
+     * @param preparedStatement the DbTransferLog as SELECT command to export (and purge)
+     * @param filename the filename where the DbLogs will be exported
+     *
      * @return The message for the HTTPS interface
      */
     public static String saveDbTransferLogFile(DbPreparedStatement preparedStatement,
@@ -597,15 +608,12 @@ public class DbTransferLog extends AbstractDbData {
     }
 
     /**
-     * Exports DbTransferLogs to a Writer object and  optionally purges
-     * the corresponding DbTransferLogs
+     * Exports DbTransferLogs to a Writer object and  optionally purges the corresponding DbTransferLogs
      *
-     * @param preparedStatement
-     *            the DbTransferLog as SELECT command to export (and purge)
-     * @param outWriter
-     *            a Writer object where the DbLogs will be written
-     * @param  purge
-     *            sets whether or not the selected results must be purged
+     * @param preparedStatement the DbTransferLog as SELECT command to export (and purge)
+     * @param outWriter a Writer object where the DbLogs will be written
+     * @param purge sets whether or not the selected results must be purged
+     *
      * @return The message for the HTTPS interface
      */
     public static String saveDbTransferLogFile(DbPreparedStatement preparedStatement,
@@ -752,7 +760,6 @@ public class DbTransferLog extends AbstractDbData {
     }
 
     /**
-     *
      * @return The Where condition on Primary Key
      */
     protected String getWherePrimaryKey() {
@@ -930,7 +937,6 @@ public class DbTransferLog extends AbstractDbData {
     }
 
     /**
-     *
      * @return The current UpdatedInfo value
      */
     public UpdatedInfo getUpdatedInfo() {
@@ -938,7 +944,6 @@ public class DbTransferLog extends AbstractDbData {
     }
 
     /**
-     *
      * @return the ReplyCode code associated with the Updated Info
      */
     public ReplyCode getErrorInfo() {
@@ -960,8 +965,7 @@ public class DbTransferLog extends AbstractDbData {
     }
 
     /**
-     * @param filename
-     *            the filename to set
+     * @param filename the filename to set
      */
     public void setFilename(String filename) {
         if (!this.filename.equals(filename)) {
@@ -986,8 +990,7 @@ public class DbTransferLog extends AbstractDbData {
     }
 
     /**
-     * @param infotransf
-     *            the infotransf to set
+     * @param infotransf the infotransf to set
      */
     public void setInfotransf(String infotransf) {
         this.infotransf = infotransf;
@@ -1057,15 +1060,13 @@ public class DbTransferLog extends AbstractDbData {
     }
 
     /**
-     * @param stop
-     *            the stop to set
+     * @param stop the stop to set
      */
     public void setStop(Timestamp stop) {
         this.stop = stop;
     }
 
     /**
-     *
      * @return the associated XmlValue
      */
     private XmlValue[] saveIntoXmlValue() {
@@ -1094,6 +1095,7 @@ public class DbTransferLog extends AbstractDbData {
      * Save the current DbTransferLog to a file
      *
      * @param filename
+     *
      * @return The message for the HTTPS interface
      */
     public String saveDbTransferLog(String filename) {
